@@ -64,7 +64,7 @@ const Login = () => {
         </View>
 
         <View style={styles.buttonContainer}>
-          <Button title="Crear cuenta" onPress={signUp} color="#008080" />
+          <Button title="Registrarse" onPress={signUp} color="#008080" />
         </View>
       </KeyboardAvoidingView>
     </View>
