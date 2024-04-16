@@ -1,6 +1,7 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Login from "./app/screens/Login";
+import SignUp from "./app/screens/SignUp";
 import { useEffect, useState } from "react";
 import { User, onAuthStateChanged } from "firebase/auth";
 import { FIREBASE_AUTH } from "./FirebaseConfig";
@@ -22,6 +23,11 @@ export default function App() {
         <Stack.Screen
           name="Login"
           component={Login}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="SignUp"
+          component={SignUp}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

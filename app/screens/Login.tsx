@@ -1,25 +1,22 @@
 import React, { useState } from "react";
 import {
   View,
-  Text,
   StyleSheet,
   TextInput,
-  ActivityIndicator,
   Button,
   KeyboardAvoidingView,
   Image,
 } from "react-native";
 import { FIREBASE_AUTH } from "../../FirebaseConfig";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useNavigation } from "@react-navigation/native";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const auth = FIREBASE_AUTH;
+  const navigation = useNavigation();
 
   const signIn = async () => {
     setLoading(true);
@@ -35,22 +32,17 @@ const Login = () => {
   };
 
   const signUp = async () => {
-    setLoading(true);
-    try {
-      const response = await createUserWithEmailAndPassword(auth, email, password);
-      console.log(response);
-    } catch (error: any) {
-      console.log(error);
-      alert("Registro fallido: " + error.message);
-    } finally {
-      setLoading(false);
-    }
+    (navigation as any).navigate("SignUp");
   };
-  
+
   return (
     <View style={styles.container}>
       <KeyboardAvoidingView behavior="padding" style={styles.formContainer}>
-        <Image source={require('../../assets/logo.png')} style={styles.logo} resizeMode="contain" />
+        <Image
+          source={require("../../assets/logo.png")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
         <TextInput
           value={email}
           style={styles.input}
@@ -109,5 +101,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginVertical: 5,
     width: "100%",
+    borderRadius: 10,
+    overflow: "hidden",
   },
 });
