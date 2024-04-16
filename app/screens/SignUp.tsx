@@ -9,7 +9,7 @@ import {
     TouchableOpacity,
 } from "react-native";
 import React, { useState } from "react";
-import { useNavigation } from "@react-navigation/native"; // Importa useNavigation
+import { useNavigation } from "@react-navigation/native";
 import { FIREBASE_AUTH } from "../../FirebaseConfig";
 import { createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from "firebase/auth";
 
@@ -19,7 +19,7 @@ const SignUp = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const auth = FIREBASE_AUTH;
-    const navigation = useNavigation(); // Usa useNavigation para obtener la función de navegación
+    const navigation = useNavigation();
 
     const register = async () => {
         setLoading(true);
@@ -32,7 +32,6 @@ const SignUp = () => {
                 throw new Error("La contraseña debe tener al menos 6 caracteres");
             }
 
-            // Verifica si ya existe una cuenta con el correo electrónico proporcionado
             const signInMethods = await fetchSignInMethodsForEmail(auth, email);
             if (signInMethods.length > 0) {
                 throw new Error("Ya existe una cuenta asociada a este correo electrónico");
@@ -45,12 +44,10 @@ const SignUp = () => {
             );
             console.log(response);
 
-            // Muestra un mensaje de éxito
             Alert.alert("Éxito", "Cuenta creada con éxito", [
                 {
                     text: "OK",
                     onPress: () => {
-                        // Navega hacia atrás después de cerrar el aviso
                         navigation.goBack();
                     },
                 },
@@ -102,12 +99,10 @@ const SignUp = () => {
                 <View style={styles.buttonContainer}>
                     <Button title="Crear cuenta" onPress={register} color="#008080" />
                 </View>
-                {/* Botón para regresar a la pantalla de inicio de sesión */}
                 <TouchableOpacity
                     style={styles.backButton}
                     onPress={() => navigation.goBack()}
                 >
-                    {/* Icono de flecha hacia atrás */}
                     <Image
                         source={require("../../assets/back_arrow.png")}
                         style={styles.backIcon}
@@ -154,11 +149,11 @@ const styles = StyleSheet.create({
     },
     backButton: {
         position: "absolute",
-        bottom: -100, // Ajusta esta propiedad para cambiar la posición vertical del botón
+        bottom: -100,
         alignSelf: "center",
     },
     backIcon: {
-        width: 50, // Ajusta el tamaño del icono
-        height: 50, // Ajusta el tamaño del icono
+        width: 50, 
+        height: 50, 
     },
 });
