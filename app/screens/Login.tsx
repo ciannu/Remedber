@@ -6,6 +6,7 @@ import {
   Button,
   KeyboardAvoidingView,
   Image,
+  Alert,
 } from "react-native";
 import { FIREBASE_AUTH } from "../../FirebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -23,6 +24,15 @@ const Login = () => {
     try {
       const response = await signInWithEmailAndPassword(auth, email, password);
       console.log(response);
+
+      Alert.alert("Éxito", "Sesión iniciada correctamente.", [
+        {
+          text: "OK",
+          onPress: () => {
+            (navigation as any).navigate("Home");
+          },
+        },
+      ]);
     } catch (error: any) {
       console.log(error);
       alert("Inicio de sesión fallido: " + error.message);
