@@ -24,12 +24,15 @@ const Login = () => {
     try {
       const response = await signInWithEmailAndPassword(auth, email, password);
       console.log(response);
+      const userId = response.user.uid;
 
+      console.log("ID USER: ", userId)
+      
       Alert.alert("Éxito", "Sesión iniciada correctamente.", [
         {
           text: "OK",
           onPress: () => {
-            (navigation as any).navigate("Home");
+            (navigation as any).navigate("CreateProfile");
           },
         },
       ]);

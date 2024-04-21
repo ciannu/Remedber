@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Login from "./app/screens/Login";
 import SignUp from "./app/screens/SignUp";
 import Home from "./app/screens/Home";
+import CreateProfile from "./app/screens/CreateProfile";
 import { useEffect, useState } from "react";
 import { User, onAuthStateChanged } from "firebase/auth";
 import { FIREBASE_AUTH } from "./FirebaseConfig";
@@ -34,6 +35,11 @@ export default function App() {
         <Stack.Screen
           name="Home"
           component={Home}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="CreateProfile"
+          component={CreateProfile}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
