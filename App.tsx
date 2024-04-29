@@ -4,9 +4,11 @@ import Login from "./app/screens/Login";
 import SignUp from "./app/screens/SignUp";
 import Home from "./app/screens/Home";
 import CreateProfile from "./app/screens/CreateProfile";
+import Profiles from "./app/screens/Profiles";
 import { useEffect, useState } from "react";
 import { User, onAuthStateChanged } from "firebase/auth";
 import { FIREBASE_AUTH } from "./FirebaseConfig";
+import { FIRESTORE_DB } from "./FirebaseConfig";
 
 const Stack = createNativeStackNavigator();
 
@@ -40,6 +42,11 @@ export default function App() {
         <Stack.Screen
           name="CreateProfile"
           component={CreateProfile}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Profiles"
+          component={Profiles}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

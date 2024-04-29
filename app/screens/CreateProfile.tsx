@@ -1,27 +1,25 @@
-import {
-  KeyboardAvoidingView,
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TextInput,
-} from "react-native";
 import React, { useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, TextInput } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 const CreateProfile = () => {
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
-  const [gender, setGender] = useState("Male");
+  const [gender, setGender] = useState<string>("");
 
-  //const toggleSwitch = () => setGender()
+  const navigation = useNavigation();
+
+  const handleGenderSelection = (selectedGender: string) => {
+    setGender(selectedGender);
+  };
+
+  const handleCreateProfile = () => {
+    (navigation as any).navigate("CreateProfile");
+  };
+
   return (
     <View style={styles.container}>
-      <KeyboardAvoidingView behavior="padding" style={styles.formContainer}>
-        <Image
-          source={require("../../assets/logo.png")}
-          style={styles.logo}
-          resizeMode="contain"
-        />
+      <View style={styles.formContainer}>
         <Text style={styles.title}>Crea tu perfil</Text>
         <TextInput
           value={name}
@@ -35,13 +33,36 @@ const CreateProfile = () => {
           placeholder="Introduce tu apellido"
           onChangeText={(text) => setSurname(text)}
         />
-
-      </KeyboardAvoidingView>
+        <View style={styles.genderContainer}>
+          <TouchableOpacity
+            style={[
+              styles.genderButton,
+              gender === "Masculino" && styles.selectedGenderButton,
+            ]}
+            onPress={() => handleGenderSelection("Masculino")}
+          >
+            <Text style={styles.genderButtonText}>Masculino</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.genderButton,
+              gender === "Femenino" && styles.selectedGenderButton,
+            ]}
+            onPress={() => handleGenderSelection("Femenino")}
+          >
+            <Text style={styles.genderButtonText}>Femenino</Text>
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity
+          style={styles.createButton}
+          onPress={handleCreateProfile}
+        >
+          <Text style={styles.createButtonText}>Crear perfil</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
-
-export default CreateProfile;
 
 const styles = StyleSheet.create({
   container: {
@@ -54,10 +75,11 @@ const styles = StyleSheet.create({
     width: "80%",
     alignItems: "center",
   },
-  logo: {
-    width: 150,
-    height: 150,
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
     marginBottom: 20,
+    color: "#008080",
   },
   input: {
     marginVertical: 10,
@@ -68,26 +90,38 @@ const styles = StyleSheet.create({
     backgroundColor: "#e0ffff",
     width: "100%",
   },
-  buttonContainer: {
-    marginVertical: 5,
-    width: "100%",
-    borderRadius: 10,
-    overflow: "hidden",
+  genderContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
   },
-  backButton: {
-    position: "absolute",
-    bottom: -100,
-    alignSelf: "center",
+  genderButton: {
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#008080",
+    borderRadius: 4,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
   },
-  backIcon: {
-    width: 50,
-    height: 50,
+  selectedGenderButton: {
+    backgroundColor: "#008080",
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
+  genderButtonText: {
     color: "#008080",
-  }
-  
+    fontWeight: "bold",
+  },
+  createButton: {
+    backgroundColor: "#008080",
+    borderRadius: 4,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    marginTop: 20,
+  },
+  createButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
 });
+
+export default CreateProfile;
