@@ -14,14 +14,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FIREBASE_AUTH } from "../../FirebaseConfig";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false); // Estado para recordar credenciales
+  const [email, setEmail] = useState(""); // State variable to store user email
+  const [password, setPassword] = useState(""); // State variable to store user password
+  const [loading, setLoading] = useState(false); // State variable to manage loading state
+  const [rememberMe, setRememberMe] = useState(false); // State variable to remember user credentials
 
-  const auth = FIREBASE_AUTH;
-  const navigation = useNavigation();
+  const auth = FIREBASE_AUTH; // Firebase authentication instance
+  const navigation = useNavigation(); // Navigation hook
 
+  // Function to sign in with email and password
   const signIn = async () => {
     setLoading(true);
     try {
@@ -40,23 +41,25 @@ const Login = () => {
         },
       ]);
 
-      // Guardar email y contraseña en AsyncStorage si "Recuérdame" está marcado
+      // Save email and password to AsyncStorage if "Remember Me" is checked
       if (rememberMe) {
         await AsyncStorage.setItem("email", email);
         await AsyncStorage.setItem("password", password);
       }
     } catch (error: any) {
       console.error(error);
-      alert("Inicio de sesión fallido: " + error.message);
+      alert("Login fallido: " + error.message);
     } finally {
       setLoading(false);
     }
   };
 
+  // Function to navigate to sign up screen
   const signUp = () => {
     (navigation as any).navigate("SignUp");
   };
 
+  // Effect hook to check if there are stored credentials
   useEffect(() => {
     const checkStoredCredentials = async () => {
       try {
@@ -65,17 +68,17 @@ const Login = () => {
         if (storedEmail && storedPassword) {
           setEmail(storedEmail);
           setPassword(storedPassword);
-          setRememberMe(true); // Marcar como recordado si se encuentran credenciales almacenadas
+          setRememberMe(true); // Mark as remembered if credentials are found
         }
       } catch (error: any) {
-        console.error("Error retrieving stored credentials:", error.message);
+        console.error("Error al recuperar las credenciales guardadas", error.message);
       }
     };
 
     checkStoredCredentials();
   }, []);
 
-  // Función para manejar el cambio en el estado de "Recuérdame"
+  // Function to handle the change in "Remember Me" state
   const toggleRememberMe = () => {
     setRememberMe((prev) => !prev);
   };
@@ -104,21 +107,23 @@ const Login = () => {
           onChangeText={(text) => setPassword(text)}
         />
 
-        {/* Botón para cambiar el estado de "Recuérdame" */}
+        {/* Button to change "Remember Me" state */}
         <View style={styles.rememberMeContainer}>
           <Button
-            title={rememberMe ? "No recordar" : "Recuérdame"}
+            title={rememberMe ? "Forget Me" : "Remember Me"}
             onPress={toggleRememberMe}
             color="#008080"
           />
         </View>
 
+        {/* Button to sign in */}
         <View style={styles.buttonContainer}>
-          <Button title="Iniciar sesión" onPress={signIn} color="#008080" />
+          <Button title="Sign In" onPress={signIn} color="#008080" />
         </View>
 
+        {/* Button to navigate to sign up */}
         <View style={styles.buttonContainer}>
-          <Button title="Registrarse" onPress={signUp} color="#008080" />
+          <Button title="Sign Up" onPress={signUp} color="#008080" />
         </View>
       </KeyboardAvoidingView>
     </View>
