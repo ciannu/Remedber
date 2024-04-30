@@ -1,38 +1,105 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, TextInput } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+  Alert,
+  Image,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { getAuth, onAuthStateChanged, User } from "firebase/auth";
+import { addDoc, collection } from "firebase/firestore";
+import { FIREBASE_AUTH, FIRESTORE_DB } from "../../FirebaseConfig";
 
 const CreateProfile = () => {
+  // State variables to store user input
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [gender, setGender] = useState<string>("");
-
+  const [userId, setUserId] = useState<string>("");
   const navigation = useNavigation();
 
+  // Effect hook to get user ID when component mounts
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
+      if (user) {
+        setUserId(user.uid);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Function to handle gender selection
   const handleGenderSelection = (selectedGender: string) => {
     setGender(selectedGender);
   };
 
-  const handleCreateProfile = () => {
-    (navigation as any).navigate("CreateProfile");
+  // Function to create a new profile
+  const handleCreateProfile = async () => {
+    try {
+      if (!userId) {
+        Alert.alert("Error", "Fallo al obtener el ID del usuario");
+        return;
+      }
+
+      if (!name.trim() || !surname.trim() || !gender) {
+        Alert.alert("Error", "Por favor rellena todos los campos");
+        return;
+      }
+
+      // Add new profile to Firestore
+      await addDoc(collection(FIRESTORE_DB, "profiles"), {
+        userId: userId,
+        name: name,
+        surname: surname,
+        gender: gender,
+      });
+
+      // Display success message and navigate back
+      Alert.alert("Éxito", "Perfil creado correctamente", [
+        {
+          text: "OK",
+          onPress: () => {
+            navigation.goBack();
+          },
+        },
+      ]);
+    } catch (error) {
+      console.error("Error creando el perfil", error);
+      Alert.alert("Error", "Hubo un problema creando tu perfil.");
+    }
   };
 
+  // Render create profile form
   return (
     <View style={styles.container}>
       <View style={styles.formContainer}>
+        {/* Logo */}
+        <Image
+          source={require("../../assets/logo.png")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+        {/* Title */}
         <Text style={styles.title}>Crea tu perfil</Text>
+        {/* Name input */}
         <TextInput
           value={name}
           style={styles.input}
           placeholder="Introduce tu nombre"
           onChangeText={(text) => setName(text)}
         />
+        {/* Surname input */}
         <TextInput
           value={surname}
           style={styles.input}
           placeholder="Introduce tu apellido"
           onChangeText={(text) => setSurname(text)}
         />
+        {/* Gender selection buttons */}
         <View style={styles.genderContainer}>
           <TouchableOpacity
             style={[
@@ -53,6 +120,7 @@ const CreateProfile = () => {
             <Text style={styles.genderButtonText}>Femenino</Text>
           </TouchableOpacity>
         </View>
+        {/* Button to create profile */}
         <TouchableOpacity
           style={styles.createButton}
           onPress={handleCreateProfile}
@@ -60,10 +128,24 @@ const CreateProfile = () => {
           <Text style={styles.createButtonText}>Crear perfil</Text>
         </TouchableOpacity>
       </View>
+      {/* Back button */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+      >
+        <Image
+          source={require("../../assets/back_arrow.png")}
+          style={styles.backIcon}
+          resizeMode="contain"
+        />
+      </TouchableOpacity>
     </View>
   );
 };
 
+export default CreateProfile;
+
+// Stylesheet
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -89,6 +171,11 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#e0ffff",
     width: "100%",
+  },
+  logo: {
+    width: 150,
+    height: 150,
+    marginBottom: 20,
   },
   genderContainer: {
     flexDirection: "row",
@@ -122,6 +209,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
   },
+  backButton: {
+    position: "absolute",
+    top: 40,
+    left: 20,
+  },
+  backIcon: {
+    width: 30,
+    height: 30,
+  },
 });
-
-export default CreateProfile;

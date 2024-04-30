@@ -14,29 +14,37 @@ import { FIREBASE_AUTH } from "../../FirebaseConfig";
 import { createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from "firebase/auth";
 
 const SignUp = () => {
+    // State variables to store user input and loading state
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [loading, setLoading] = useState(false);
+
+    // Firebase authentication instance
     const auth = FIREBASE_AUTH;
+
+    // Navigation hook
     const navigation = useNavigation();
 
+    // Function to register a new user account
     const register = async () => {
-        setLoading(true);
+        setLoading(true); // Set loading state to true
         try {
+            // Validate password and confirm password fields
             if (password !== confirmPassword) {
                 throw new Error("Las contraseñas no coinciden");
             }
-
             if (password.length < 6) {
-                throw new Error("La contraseña debe tener al menos 6 caracteres");
+                throw new Error("La contraseña debe tener al menos 6 carácteres");
             }
 
+            // Check if email is already associated with an account
             const signInMethods = await fetchSignInMethodsForEmail(auth, email);
             if (signInMethods.length > 0) {
-                throw new Error("Ya existe una cuenta asociada a este correo electrónico");
+                throw new Error("Una cuenta con ese email ya existe.");
             }
 
+            // Create new user account with Firebase authentication
             const response = await createUserWithEmailAndPassword(
                 auth,
                 email,
@@ -44,7 +52,8 @@ const SignUp = () => {
             );
             console.log(response);
 
-            Alert.alert("Éxito", "Cuenta creada con éxito", [
+            // Display success message and navigate back to previous screen
+            Alert.alert("Éxito", "Cuenta creada correctamente", [
                 {
                     text: "OK",
                     onPress: () => {
@@ -53,25 +62,30 @@ const SignUp = () => {
                 },
             ]);
         } catch (error: any) {
+            // Handle errors during registration
             if (error.code === "auth/email-already-in-use") {
-                alert("Ya existe una cuenta asociada a este correo electrónico");
+                alert("Una cuenta con ese correo ya existe");
             } else {
                 console.log(error);
                 alert("Registro fallido: " + error.message);
             }
         } finally {
-            setLoading(false);
+            setLoading(false); // Set loading state to false
         }
     };
 
+    // Render sign up form
     return (
         <View style={styles.container}>
+            {/* Keyboard avoiding view to handle input */}
             <KeyboardAvoidingView behavior="padding" style={styles.formContainer}>
+                {/* Logo */}
                 <Image
                     source={require("../../assets/logo.png")}
                     style={styles.logo}
                     resizeMode="contain"
                 />
+                {/* Email input */}
                 <TextInput
                     value={email}
                     style={styles.input}
@@ -79,6 +93,7 @@ const SignUp = () => {
                     autoCapitalize="none"
                     onChangeText={(text) => setEmail(text)}
                 />
+                {/* Password input */}
                 <TextInput
                     secureTextEntry={true}
                     value={password}
@@ -87,18 +102,22 @@ const SignUp = () => {
                     autoCapitalize="none"
                     onChangeText={(text) => setPassword(text)}
                 />
+                {/* Confirm password input */}
                 <TextInput
                     secureTextEntry={true}
                     value={confirmPassword}
                     style={styles.input}
-                    placeholder="Repite la contraseña"
+                    placeholder="Confirmar contraseña"
                     autoCapitalize="none"
                     onChangeText={(text) => setConfirmPassword(text)}
                 />
 
+                {/* Button to create account */}
                 <View style={styles.buttonContainer}>
                     <Button title="Crear cuenta" onPress={register} color="#008080" />
                 </View>
+                
+                {/* Button to navigate back */}
                 <TouchableOpacity
                     style={styles.backButton}
                     onPress={() => navigation.goBack()}
@@ -115,7 +134,7 @@ const SignUp = () => {
 };
 
 export default SignUp;
-
+// Stylesheet
 const styles = StyleSheet.create({
     container: {
         flex: 1,
