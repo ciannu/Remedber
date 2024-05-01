@@ -7,7 +7,7 @@ import {
   Alert,
   Image,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useIsFocused } from "@react-navigation/native";
 import {
   getFirestore,
   collection,
@@ -24,6 +24,7 @@ import { FIREBASE_APP } from "../../FirebaseConfig";
 // Component to manage user profiles
 const Profiles = () => {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const [userProfiles, setUserProfiles] = useState<DocumentData[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
 
@@ -42,7 +43,7 @@ const Profiles = () => {
       }));
       setUserProfiles(profilesData);
     } catch (error) {
-      console.error("Error recuperando los perfiles:", error);
+      console.error("Error fetching profiles:", error);
       // Handle the error as needed
     }
   };
@@ -61,12 +62,10 @@ const Profiles = () => {
 
   // Effect hook to refetch user profiles when the component is focused
   useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () => {
-      // Refetch user profiles when the component is focused
+    if (isFocused) {
       fetchUserProfiles();
-    });
-    return unsubscribe;
-  }, [navigation]); // Add navigation as dependency to rerun this effect when the navigation changes
+    }
+  }, [isFocused]);
 
   // Function to delete a profile
   const handleDeleteProfile = async (profileId: string) => {
@@ -76,10 +75,10 @@ const Profiles = () => {
       setUserProfiles((prevProfiles) =>
         prevProfiles.filter((profile) => profile.id !== profileId)
       );
-      Alert.alert("Éxito", "Perfil borrado correctamente");
+      Alert.alert("Success", "Profile deleted successfully");
     } catch (error) {
-      console.error("Error borrando el perfil:", error);
-      Alert.alert("Error", "Hubo un problema borrando el perfil");
+      console.error("Error deleting profile:", error);
+      Alert.alert("Error", "There was a problem deleting the profile");
     }
   };
 
@@ -96,8 +95,8 @@ const Profiles = () => {
     } else {
       // Show alert if the user has reached the profile limit
       Alert.alert(
-        "Límite de perfiles alcanzado",
-        "Has alcanzado el límite de 3 perfiles por cuenta."
+        "Profile Limit Reached",
+        "You have reached the maximum limit of 3 profiles."
       );
     }
   };
@@ -149,7 +148,7 @@ const Profiles = () => {
         style={styles.createProfileButton}
         onPress={navigateToCreateProfile}
       >
-        <Text style={styles.createProfileButtonText}>Crear nuevo perfil</Text>
+        <Text style={styles.createProfileButtonText}>Create New Profile</Text>
       </TouchableOpacity>
     </View>
   );
