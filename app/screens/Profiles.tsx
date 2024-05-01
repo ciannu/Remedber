@@ -27,41 +27,46 @@ const Profiles = () => {
   const [userProfiles, setUserProfiles] = useState<DocumentData[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
 
-  // Effect hook to fetch user profiles
+  // Function to fetch user profiles for the current user
+  const fetchUserProfiles = async () => {
+    try {
+      if (!userId) return; // Exit if there is no user ID
+      const q = query(
+        collection(getFirestore(FIREBASE_APP), "profiles"),
+        where("userId", "==", userId)
+      );
+      const querySnapshot = await getDocs(q);
+      const profilesData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setUserProfiles(profilesData);
+    } catch (error) {
+      console.error("Error recuperando los perfiles:", error);
+      // Handle the error as needed
+    }
+  };
+
+  // Effect hook to fetch user profiles and set user ID
   useEffect(() => {
     const auth = getAuth(FIREBASE_APP);
     const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
       if (user) {
         setUserId(user.uid); // Save the current user's ID
+        fetchUserProfiles(); // Fetch user profiles for the current user
       }
     });
     return () => unsubscribe();
   }, []);
 
-  // Effect hook to fetch user profiles for the current user
+  // Effect hook to refetch user profiles when the component is focused
   useEffect(() => {
-    // Fetch user profiles for the current user
-    const fetchUserProfiles = async () => {
-      try {
-        if (!userId) return; // Exit if there is no user ID
-        const q = query(
-          collection(getFirestore(FIREBASE_APP), "profiles"),
-          where("userId", "==", userId)
-        );
-        const querySnapshot = await getDocs(q);
-        const profilesData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setUserProfiles(profilesData);
-      } catch (error) {
-        console.error("Error fetching profiles:", error);
-        // Handle the error as needed
-      }
-    };
-
-    fetchUserProfiles();
-  }, [userId]); // Add userId as dependency to rerun this effect whenever userId changes
+    const unsubscribe = navigation.addListener("focus", () => {
+      // Refetch user profiles when the component is focused
+      fetchUserProfiles();
+    });
+    return unsubscribe;
+  }, [navigation]); // Add navigation as dependency to rerun this effect when the navigation changes
 
   // Function to delete a profile
   const handleDeleteProfile = async (profileId: string) => {
@@ -71,10 +76,10 @@ const Profiles = () => {
       setUserProfiles((prevProfiles) =>
         prevProfiles.filter((profile) => profile.id !== profileId)
       );
-      Alert.alert("Success", "Profile deleted successfully");
+      Alert.alert("Éxito", "Perfil borrado correctamente");
     } catch (error) {
-      console.error("Error deleting profile:", error);
-      Alert.alert("Error", "There was a problem deleting the profile");
+      console.error("Error borrando el perfil:", error);
+      Alert.alert("Error", "Hubo un problema borrando el perfil");
     }
   };
 
@@ -85,7 +90,16 @@ const Profiles = () => {
 
   // Function to navigate to create profile screen
   const navigateToCreateProfile = () => {
-    (navigation as any).navigate("CreateProfile");
+    // Check if the user has less than 3 profiles
+    if (userProfiles.length < 3) {
+      (navigation as any).navigate("CreateProfile");
+    } else {
+      // Show alert if the user has reached the profile limit
+      Alert.alert(
+        "Límite de perfiles alcanzado",
+        "Has alcanzado el límite de 3 perfiles por cuenta."
+      );
+    }
   };
 
   // Render component UI

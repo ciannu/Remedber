@@ -71,7 +71,10 @@ const Login = () => {
           setRememberMe(true); // Mark as remembered if credentials are found
         }
       } catch (error: any) {
-        console.error("Error al recuperar las credenciales guardadas", error.message);
+        console.error(
+          "Error al recuperar las credenciales guardadas",
+          error.message
+        );
       }
     };
 
@@ -107,7 +110,7 @@ const Login = () => {
           onChangeText={(text) => setPassword(text)}
         />
 
-        {/* Button to change "Remember Me" state */}
+        {/* Button to change "Remember Me" state 
         <View style={styles.rememberMeContainer}>
           <Button
             title={rememberMe ? "Forget Me" : "Remember Me"}
@@ -115,7 +118,7 @@ const Login = () => {
             color="#008080"
           />
         </View>
-
+*/}
         {/* Button to sign in */}
         <View style={styles.buttonContainer}>
           <Button title="Sign In" onPress={signIn} color="#008080" />
