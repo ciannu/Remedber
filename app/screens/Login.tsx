@@ -71,7 +71,10 @@ const Login = () => {
           setRememberMe(true); // Mark as remembered if credentials are found
         }
       } catch (error: any) {
-        console.error("Error al recuperar las credenciales guardadas", error.message);
+        console.error(
+          "Error al recuperar las credenciales guardadas",
+          error.message
+        );
       }
     };
 
