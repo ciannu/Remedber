@@ -36,7 +36,7 @@ const Login = () => {
         {
           text: "OK",
           onPress: () => {
-            (navigation as any).navigate("Profiles");
+            (navigation as any).navigate("Profiles", { userId });
           },
         },
       ]);
@@ -107,7 +107,7 @@ const Login = () => {
           onChangeText={(text) => setPassword(text)}
         />
 
-        {/* Button to change "Remember Me" state */}
+        {/* Button to change "Remember Me" state 
         <View style={styles.rememberMeContainer}>
           <Button
             title={rememberMe ? "Forget Me" : "Remember Me"}
@@ -115,7 +115,7 @@ const Login = () => {
             color="#008080"
           />
         </View>
-
+*/}
         {/* Button to sign in */}
         <View style={styles.buttonContainer}>
           <Button title="Sign In" onPress={signIn} color="#008080" />

@@ -63,7 +63,7 @@ const CreateProfile = () => {
         {
           text: "OK",
           onPress: () => {
-            navigation.goBack();
+            (navigation as any).navigate("Profiles", { newProfileCreated: true });
           },
         },
       ]);

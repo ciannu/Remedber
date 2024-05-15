@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   Alert,
   Image,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import {
   getFirestore,
   collection,
@@ -18,12 +18,19 @@ import {
   DocumentData,
   doc,
 } from "firebase/firestore";
+
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { FIREBASE_APP } from "../../FirebaseConfig";
+
+type RootStackParamList = {
+  Profiles: { newProfileCreated?: boolean }; // Aquí se define la propiedad 'newProfileCreated'
+  // Agrega otras rutas si es necesario
+};
 
 // Component to manage user profiles
 const Profiles = () => {
   const navigation = useNavigation();
+  const route = useRoute<RouteProp<RootStackParamList, "Profiles">>();
   const [userProfiles, setUserProfiles] = useState<DocumentData[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
 
@@ -39,9 +46,9 @@ const Profiles = () => {
   }, []);
 
   // Effect hook to fetch user profiles for the current user
-  useEffect(() => {
+  
     // Fetch user profiles for the current user
-    const fetchUserProfiles = async () => {
+    const fetchUserProfiles = useCallback(async () => {
       try {
         if (!userId) return; // Exit if there is no user ID
         const q = query(
@@ -58,10 +65,23 @@ const Profiles = () => {
         console.error("Error fetching profiles:", error);
         // Handle the error as needed
       }
-    };
+    }, [userId]);
 
+    useEffect(() => {
+      const unsubscribe = navigation.addListener("focus", () => {
+        // Verificar si se creó un nuevo perfil
+        const newProfileCreated = route.params?.  newProfileCreated;
+        if (newProfileCreated) {
+          fetchUserProfiles(); // Recargar perfiles si se creó un nuevo perfil
+        }
+      });
+    
+      return unsubscribe;
+    }, [navigation]);
+
+    useEffect(() => {
     fetchUserProfiles();
-  }, [userId]); // Add userId as dependency to rerun this effect whenever userId changes
+  }, [fetchUserProfiles]);
 
   // Function to delete a profile
   const handleDeleteProfile = async (profileId: string) => {
