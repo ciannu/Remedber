@@ -1,17 +1,19 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import CalendarComponent from '../components/CalendarComponent';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
 
   const handleAddMedication = () => {
     // Navegar a la pantalla para agregar medicamento
-    (navigation as any).navigate("CreateProfile");
+    (navigation as any).navigate("AddMed");
   };
 
   return (
     <View style={styles.container}>
+      <CalendarComponent></CalendarComponent>
       <TouchableOpacity onPress={handleAddMedication}>
         <Image source={require('../../assets/add.png')} style={styles.image} />
       </TouchableOpacity>
