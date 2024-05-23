@@ -22,14 +22,14 @@ const AddMed = () => {
   const [medType, setMedType] = useState("");
   const [medamount, setMedamount] = useState("");
   const [meddose, setMeddose] = useState("");
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedHour, setSelectedHour] = useState(new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})); // solo la hora
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [days, setDays] = useState<{
     [key: string]: boolean;
   }>({
     lunes: false,
     martes: false,
-    miercoles: false,
+    miércoles: false,
     jueves: false,
     viernes: false,
     sabado: false,
@@ -37,10 +37,11 @@ const AddMed = () => {
   });
   const [userId, setUserId] = useState<string>("");
   const navigation = useNavigation();
+  
   const handleDateChange = (event: any, selectedDate: Date | undefined) => {
     const currentDate = selectedDate || new Date();
     setShowDatePicker(false);
-    setSelectedDate(currentDate);
+    setSelectedHour(currentDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})); // Actualizar solo la hora
   };
 
   const showDatepicker = () => {
@@ -67,29 +68,35 @@ const AddMed = () => {
         Alert.alert("Error", "Fallo al obtener el ID del usuario");
         return;
       }
-
+  
       if (
         !medname.trim() ||
         !medType.trim() ||
         !meddose.trim() ||
         !medamount.trim() ||
-        !selectedDate ||
+        !selectedHour || // Cambiado de selectedDate a selectedHour
         !days
       ) {
         Alert.alert("Error", "Por favor rellene todos los campos.");
         return;
       }
-
+  
+      // No es necesario crear un objeto Date si solo estamos interesados en la hora
+      // const selectedDate = new Date();
+      // const hourMinute = selectedHour.split(':');
+      // selectedDate.setHours(parseInt(hourMinute[0]), parseInt(hourMinute[1]));
+  
       await addDoc(collection(FIRESTORE_DB, "medicines"), {
         userId: userId,
         name: medname,
         type: medType,
         dose: meddose,
         amount: medamount,
-        date: selectedDate,
+        // date: selectedDate, // No se incluye la fecha completa
+        hour: selectedHour, // Solo la hora
         days: days,
       });
-
+  
       Alert.alert("Éxito", "Medicamento guardado correctamente", [
         {
           text: "OK",
@@ -103,6 +110,7 @@ const AddMed = () => {
       Alert.alert("Error", "Hubo un problema guardando el medicamento");
     }
   };
+  
 
   return (
     <View style={styles.container}>
@@ -152,8 +160,8 @@ const AddMed = () => {
           {showDatePicker && (
             <DateTimePicker
               testID="dateTimePicker"
-              value={selectedDate}
-              mode="time"
+              value={new Date()} // Valor fijo, no es necesario cambiarlo
+              mode="time" // Modo solo tiempo
               is24Hour={true}
               display="default"
               onChange={handleDateChange}
@@ -177,7 +185,6 @@ const AddMed = () => {
     </View>
   );
 };
-
 export default AddMed;
 
 const styles = StyleSheet.create({

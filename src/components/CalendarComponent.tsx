@@ -1,81 +1,111 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Dimensions, Text } from 'react-native';
-import { Calendar } from 'react-native-calendars';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import PagerView from 'react-native-pager-view';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale'; // Importamos el locale de español directamente
 
-const CalendarComponent = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+interface CalendarComponentProps {
+  selectedDate: Date | null;
+  onDayPress: (day: Date) => void;
+}
+
+const CalendarComponent: React.FC<CalendarComponentProps> = ({ selectedDate, onDayPress }) => {
+  const [weeks, setWeeks] = useState<Date[][]>([]);
+
+  const generateWeeks = () => {
+    const today = new Date();
+    const startOfCurrentWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay());
+
+    const generatedWeeks = [];
+    for (let i = 0; i < 3; i++) {
+      const week = [];
+      for (let j = 0; j < 7; j++) {
+        const day = new Date(startOfCurrentWeek.getFullYear(), startOfCurrentWeek.getMonth(), startOfCurrentWeek.getDate() + i * 7 + j);
+        week.push(day);
+      }
+      generatedWeeks.push(week);
+    }
+
+    setWeeks(generatedWeeks);
+  };
 
   useEffect(() => {
-    // Establecemos la fecha seleccionada como hoy al cargar el componente
-    setSelectedDate(new Date());
+    generateWeeks();
   }, []);
 
+  const handleDayPress = (day: Date) => {
+    onDayPress(day);
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={styles.monthContainer}>
-        <View style={styles.monthTextContainer}>
-          <Text style={styles.monthText}>
-            {format(selectedDate, 'MMMM yyyy', { locale: es }).toUpperCase()}
-          </Text>
+    <PagerView style={styles.pagerView}>
+      {weeks.map((week, i) => (
+        <View key={i} style={styles.page}>
+          <View style={styles.row}>
+            {week.map((day, j) => {
+              const txt = format(day, 'EEE');
+              const isSelected = selectedDate && day.toDateString() === selectedDate.toDateString();
+              return (
+                <TouchableOpacity
+                  key={j}
+                  style={[styles.day, isSelected && styles.selectedDay]}
+                  onPress={() => handleDayPress(day)}
+                >
+                  <Text style={[styles.text, isSelected && styles.selectedText]}>{txt}</Text>
+                  <View style={[styles.numberContainer, isSelected && styles.selectedNumberContainer]}>
+                    <Text style={styles.number}>{day.getDate()}</Text>
+                  </View> 
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         </View>
-      </View>
-      <View style={styles.calendarContainer}>
-        <Calendar
-          current={format(selectedDate, 'yyyy-MM-dd')} // Cambiamos current
-          hideExtraDays
-          markedDates={{
-            [format(selectedDate, 'yyyy-MM-dd')]: { selected: true, marked: true, dotColor: 'black' },
-          }}
-          theme={{
-            calendarBackground: '#ffffff',
-            textSectionTitleColor: '#b6c1cd',
-            selectedDayBackgroundColor: '#c3d0f6',
-            selectedDayTextColor: '#333333',
-            todayTextColor: '#333333',
-            dayTextColor: '#333333',
-            textDisabledColor: '#d9e1e8',
-            arrowColor: '#333333',
-            monthTextColor: '#333333',
-            textDayFontFamily: 'Montserrat-Regular',
-            textMonthFontFamily: 'Montserrat-Bold',
-            textDayHeaderFontFamily: 'Montserrat-Medium',
-            textDayFontSize: 16,
-            textMonthFontSize: 16,
-            textDayHeaderFontSize: 14,
-          }}
-        />
-      </View>
-    </View>
+      ))}
+    </PagerView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
+  pagerView: {
+    height: 300,
   },
-  monthContainer: {
-    paddingVertical: 20,
+  page: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  monthTextContainer: {
-    backgroundColor: '#ffffff',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 10,
-    elevation: 3,
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
   },
-  monthText: {
-    fontSize: 18,
+  day: {
+    alignItems: 'center',
+    margin: 5,
+    borderRadius: 5,
+  },
+  selectedDay: {
+    backgroundColor: '#ADD8E6',
+  },
+  text: {
+    fontSize: 16,
+  },
+  selectedText: {
     fontWeight: 'bold',
-    color: '#333333',
-    fontFamily: 'Montserrat-Bold',
   },
-  calendarContainer: {
-    flex: 1,
-    paddingHorizontal: 10,
+  numberContainer: {
+    borderWidth: 1,
+    borderRadius: 20,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 5,
+  },
+  selectedNumberContainer: {
+    borderColor: '#000',
+  },
+  number: {
+    fontSize: 16,
   },
 });
 
