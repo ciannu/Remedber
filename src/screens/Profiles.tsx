@@ -46,40 +46,38 @@ const Profiles = () => {
   }, []);
 
   // Effect hook to fetch user profiles for the current user
-  
-    // Fetch user profiles for the current user
-    const fetchUserProfiles = useCallback(async () => {
-      try {
-        if (!userId) return; // Exit if there is no user ID
-        const q = query(
-          collection(getFirestore(FIREBASE_APP), "profiles"),
-          where("userId", "==", userId)
-        );
-        const querySnapshot = await getDocs(q);
-        const profilesData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setUserProfiles(profilesData);
-      } catch (error) {
-        console.error("Error fetching profiles:", error);
-        // Handle the error as needed
+  const fetchUserProfiles = useCallback(async () => {
+    try {
+      if (!userId) return; // Exit if there is no user ID
+      const q = query(
+        collection(getFirestore(FIREBASE_APP), "profiles"),
+        where("userId", "==", userId)
+      );
+      const querySnapshot = await getDocs(q);
+      const profilesData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setUserProfiles(profilesData);
+    } catch (error) {
+      console.error("Error fetching profiles:", error);
+      // Handle the error as needed
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      // Verificar si se creó un nuevo perfil
+      const newProfileCreated = route.params?.newProfileCreated;
+      if (newProfileCreated) {
+        fetchUserProfiles(); // Recargar perfiles si se creó un nuevo perfil
       }
-    }, [userId]);
+    });
 
-    useEffect(() => {
-      const unsubscribe = navigation.addListener("focus", () => {
-        // Verificar si se creó un nuevo perfil
-        const newProfileCreated = route.params?.  newProfileCreated;
-        if (newProfileCreated) {
-          fetchUserProfiles(); // Recargar perfiles si se creó un nuevo perfil
-        }
-      });
-    
-      return unsubscribe;
-    }, [navigation]);
+    return unsubscribe;
+  }, [navigation, route.params?.newProfileCreated]);
 
-    useEffect(() => {
+  useEffect(() => {
     fetchUserProfiles();
   }, [fetchUserProfiles]);
 
@@ -155,7 +153,9 @@ const Profiles = () => {
         style={styles.createProfileButton}
         onPress={navigateToCreateProfile}
       >
-        <Text style={styles.createProfileButtonText}>Crear nuevo perfil</Text>
+        <Text style={[styles.createProfileButtonText, styles.customFont]}>
+          Crear nuevo perfil
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -218,6 +218,9 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: 16,
+  },
+  customFont: {
+    fontFamily: 'Tweety', // Aplicar la fuente personalizada
   },
 });
 

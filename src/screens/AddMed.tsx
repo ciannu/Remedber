@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -8,7 +9,6 @@ import {
   Button,
   Alert,
 } from "react-native";
-import React, { useState, useEffect } from "react";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { CheckBox } from "react-native-elements";
@@ -16,13 +16,16 @@ import { FIREBASE_AUTH, FIRESTORE_DB } from "../../FirebaseConfig";
 import { addDoc, collection } from "firebase/firestore";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
+import { ColorLuminance } from "../utils/Color";
 
 const AddMed = () => {
   const [medname, setMedname] = useState("");
   const [medType, setMedType] = useState("");
   const [medamount, setMedamount] = useState("");
   const [meddose, setMeddose] = useState("");
-  const [selectedHour, setSelectedHour] = useState(new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})); // solo la hora
+  const [selectedHour, setSelectedHour] = useState(
+    new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+  ); // solo la hora
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [days, setDays] = useState<{
     [key: string]: boolean;
@@ -37,11 +40,13 @@ const AddMed = () => {
   });
   const [userId, setUserId] = useState<string>("");
   const navigation = useNavigation();
-  
+
   const handleDateChange = (event: any, selectedDate: Date | undefined) => {
     const currentDate = selectedDate || new Date();
     setShowDatePicker(false);
-    setSelectedHour(currentDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})); // Actualizar solo la hora
+    setSelectedHour(
+      currentDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    ); // Actualizar solo la hora
   };
 
   const showDatepicker = () => {
@@ -68,7 +73,7 @@ const AddMed = () => {
         Alert.alert("Error", "Fallo al obtener el ID del usuario");
         return;
       }
-  
+
       if (
         !medname.trim() ||
         !medType.trim() ||
@@ -80,23 +85,17 @@ const AddMed = () => {
         Alert.alert("Error", "Por favor rellene todos los campos.");
         return;
       }
-  
-      // No es necesario crear un objeto Date si solo estamos interesados en la hora
-      // const selectedDate = new Date();
-      // const hourMinute = selectedHour.split(':');
-      // selectedDate.setHours(parseInt(hourMinute[0]), parseInt(hourMinute[1]));
-  
+
       await addDoc(collection(FIRESTORE_DB, "medicines"), {
         userId: userId,
         name: medname,
         type: medType,
         dose: meddose,
         amount: medamount,
-        // date: selectedDate, // No se incluye la fecha completa
         hour: selectedHour, // Solo la hora
         days: days,
       });
-  
+
       Alert.alert("Éxito", "Medicamento guardado correctamente", [
         {
           text: "OK",
@@ -110,7 +109,6 @@ const AddMed = () => {
       Alert.alert("Error", "Hubo un problema guardando el medicamento");
     }
   };
-  
 
   return (
     <View style={styles.container}>
@@ -120,7 +118,7 @@ const AddMed = () => {
       </Text>
       <ScrollView
         style={{ width: "100%" }}
-        contentContainerStyle={{ paddingHorizontal: 25 }}
+        contentContainerStyle={{ paddingHorizontal: 25, paddingVertical: 40 }}
         bounces={false}
         showsVerticalScrollIndicator={false}
       >
@@ -130,10 +128,9 @@ const AddMed = () => {
           placeholder="Nombre (ejemplo: Ibuprofeno)"
           onChangeText={setMedname}
         />
-        {/* Dropdown para elegir el tipo de medicamento */}
         <Picker
           selectedValue={medType}
-          style={styles.picker}
+          style={styles.input}
           onValueChange={(itemValue, itemIndex) => setMedType(itemValue)}
         >
           <Picker.Item label="Selecciona el tipo de medicamento" value="" />
@@ -154,9 +151,12 @@ const AddMed = () => {
           placeholder="Cantidad (ejemplo: 2)"
           onChangeText={setMedamount}
         />
-        {/* DatePicker para elegir hora y minuto */}
         <View style={styles.datePickerContainer}>
-          <Button onPress={showDatepicker} title="Seleccionar Hora" />
+          <Button
+            onPress={showDatepicker}
+            title="Seleccionar Hora"
+            color="#008080"
+          />
           {showDatePicker && (
             <DateTimePicker
               testID="dateTimePicker"
@@ -168,7 +168,6 @@ const AddMed = () => {
             />
           )}
         </View>
-        {/* Lista de días */}
         <View style={styles.daysContainer}>
           {Object.entries(days).map(([day, checked]) => (
             <View style={styles.dayItem} key={day}>
@@ -177,79 +176,70 @@ const AddMed = () => {
             </View>
           ))}
         </View>
-        {/* Botón para guardar medicamento */}
         <TouchableOpacity style={styles.saveButton} onPress={saveMedication}>
-          <Text style={styles.createButtonText}>Guardar Medicamento</Text>
+          <Text style={styles.saveButtonText}>Guardar Medicamento</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
   );
 };
-export default AddMed;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#e0ffff",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
+    backgroundColor: "#E0FFFF",
+    paddingHorizontal: 20,
+    paddingTop: 20, // Añadido margen superior
   },
   title: {
-    fontSize: 30,
+    fontSize: 28,
     fontWeight: "bold",
-    fontFamily: "Montserrat-Bold",
-    marginBottom: 20,
+    marginTop: 20,
+    marginBottom: 25, // Reducido el margen inferior
+    textAlign: "center",
+    color: "#008080",
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: 16,
+    marginBottom: 35, // Reducido el margen inferior
     textAlign: "center",
-    marginTop: 20,
     color: "#555",
   },
   input: {
-    marginVertical: 10,
     height: 50,
     borderWidth: 1,
-    borderRadius: 4,
-    padding: 10,
-    backgroundColor: "#fff",
-    width: "100%",
-  },
-  picker: {
-    marginVertical: 10,
-    height: 50,
-    borderWidth: 1,
-    borderRadius: 4,
-    backgroundColor: "#fff",
-    width: "100%",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 35, // Añadido más margen inferior
+    backgroundColor: ColorLuminance("#E0FFFF", 0.8), // Cambiado el color de fondo
   },
   datePickerContainer: {
-    marginVertical: 10,
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center", // Centrado horizontal
     alignItems: "center",
+    marginBottom: 35, // Añadido más margen inferior
   },
   daysContainer: {
-    marginTop: 20,
-    paddingHorizontal: 20,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    marginBottom: 25, // Añadido más margen inferior
   },
   dayItem: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+    marginRight: 20,
   },
   saveButton: {
-    marginTop: 20,
-    backgroundColor: "#007bff",
-    padding: 15,
-    borderRadius: 5,
+    backgroundColor: "#008080",
+    borderRadius: 8,
+    paddingVertical: 15,
     alignItems: "center",
-    marginBottom: 20,
   },
-  createButtonText: {
-    color: "#fff",
+  saveButtonText: {
+    color: "#FFF",
+    fontSize: 18,
     fontWeight: "bold",
-    fontSize: 16,
   },
 });
+
+export default AddMed;

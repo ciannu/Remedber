@@ -27,6 +27,8 @@ const Home: React.FC = () => {
       <TouchableOpacity onPress={handleAddMedication} style={styles.button}>
         <Image source={require('../../assets/add.png')} style={styles.image} />
       </TouchableOpacity>
+
+      {/* falta separar los medicamentos perfiles, porque se asignan todos a la misma cuenta*/}
     </View>
   );
 };

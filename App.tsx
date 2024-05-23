@@ -3,7 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { User, onAuthStateChanged } from "firebase/auth";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { StatusBar, LogBox } from 'react-native';
+import { StatusBar } from 'react-native';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 
@@ -40,7 +40,7 @@ export default function App() {
     async function loadFonts() {
       try {
         await Font.loadAsync({
-          'Montserrat-Bold': require("./assets/fonts/Montserrat-Bold.ttf"),
+          'Tweety': require("./assets/fonts/Tweety.otf"),
         });
         setFontsLoaded(true);
       } catch (error) {
