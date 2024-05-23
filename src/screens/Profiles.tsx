@@ -23,32 +23,31 @@ import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { FIREBASE_APP } from "../../FirebaseConfig";
 
 type RootStackParamList = {
-  Profiles: { newProfileCreated?: boolean }; // Aquí se define la propiedad 'newProfileCreated'
-  // Agrega otras rutas si es necesario
+  Profiles: { newProfileCreated?: boolean };
 };
 
-// Component to manage user profiles
+// manejar perfiles del usuario
 const Profiles = () => {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RootStackParamList, "Profiles">>();
   const [userProfiles, setUserProfiles] = useState<DocumentData[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
 
-  // Effect hook to fetch user profiles
+  // fetch
   useEffect(() => {
     const auth = getAuth(FIREBASE_APP);
     const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
       if (user) {
-        setUserId(user.uid); // Save the current user's ID
+        setUserId(user.uid); //guardar id del usuario
       }
     });
     return () => unsubscribe();
   }, []);
 
-  // Effect hook to fetch user profiles for the current user
+  // fetch perfiles del usuario actual
   const fetchUserProfiles = useCallback(async () => {
     try {
-      if (!userId) return; // Exit if there is no user ID
+      if (!userId) return;
       const q = query(
         collection(getFirestore(FIREBASE_APP), "profiles"),
         where("userId", "==", userId)
@@ -60,17 +59,15 @@ const Profiles = () => {
       }));
       setUserProfiles(profilesData);
     } catch (error) {
-      console.error("Error fetching profiles:", error);
-      // Handle the error as needed
+      console.error("Error obteniendo perfiles.", error);
     }
   }, [userId]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
-      // Verificar si se creó un nuevo perfil
       const newProfileCreated = route.params?.newProfileCreated;
       if (newProfileCreated) {
-        fetchUserProfiles(); // Recargar perfiles si se creó un nuevo perfil
+        fetchUserProfiles(); // recargar cuando nuevo perfil creado
       }
     });
 
@@ -89,24 +86,21 @@ const Profiles = () => {
       setUserProfiles((prevProfiles) =>
         prevProfiles.filter((profile) => profile.id !== profileId)
       );
-      Alert.alert("Success", "Profile deleted successfully");
+      Alert.alert("Éxito", "Perfil borrado correctamente");
     } catch (error) {
-      console.error("Error deleting profile:", error);
-      Alert.alert("Error", "There was a problem deleting the profile");
+      console.error("Error borrando el perfil", error);
+      Alert.alert("Error", "Hubo un problema borrando el perfil");
     }
   };
 
-  // Function to navigate to home screen
   const handleProfileNavigation = () => {
     (navigation as any).navigate("Home");
   };
 
-  // Function to navigate to create profile screen
   const navigateToCreateProfile = () => {
     (navigation as any).navigate("CreateProfile");
   };
 
-  // Render component UI
   return (
     <View style={styles.container}>
       <Image
@@ -124,7 +118,6 @@ const Profiles = () => {
           resizeMode="contain"
         />
       </TouchableOpacity>
-      {/* Render user profiles as buttons */}
       {userProfiles.map((profile: DocumentData) => (
         <View key={profile.id} style={styles.profileContainer}>
           <TouchableOpacity
@@ -135,7 +128,6 @@ const Profiles = () => {
               {profile.name} {profile.surname}
             </Text>
           </TouchableOpacity>
-          {/* Button to delete profile */}
           <TouchableOpacity
             style={styles.deleteButton}
             onPress={() => handleDeleteProfile(profile.id)}
@@ -148,7 +140,6 @@ const Profiles = () => {
           </TouchableOpacity>
         </View>
       ))}
-      {/* Button to create a new profile */}
       <TouchableOpacity
         style={styles.createProfileButton}
         onPress={navigateToCreateProfile}
@@ -220,7 +211,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   customFont: {
-    fontFamily: 'Tweety', // Aplicar la fuente personalizada
+    fontFamily: "Tweety",
   },
 });
 

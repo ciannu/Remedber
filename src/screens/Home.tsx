@@ -1,11 +1,11 @@
 // Home.tsx
 
-import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, Text } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import CalendarComponent from '../components/CalendarComponent';
-import { retrieveMedicationsForDay } from '../utils/medications'; // Importa la función para recuperar medicamentos
-import MedicationInfo from '../components/MedicationInfo'; // Importa el componente MedicationInfo
+import React, { useState } from "react";
+import { View, StyleSheet, TouchableOpacity, Image, Text } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import CalendarComponent from "../components/CalendarComponent";
+import { retrieveMedicationsForDay } from "../utils/medications";
+import MedicationInfo from "../components/MedicationInfo";
 
 const Home: React.FC = () => {
   const navigation = useNavigation();
@@ -13,12 +13,11 @@ const Home: React.FC = () => {
   const [medications, setMedications] = useState<any[]>([]);
 
   const handleAddMedication = () => {
-    (navigation as any).navigate('AddMed');
+    (navigation as any).navigate("AddMed");
   };
 
   const handleDayPress = async (day: Date) => {
     setSelectedDay(day);
-    // Retrieve medications from Firebase that match the selected day
     const medications = await retrieveMedicationsForDay(day);
     setMedications(medications);
   };
@@ -27,10 +26,13 @@ const Home: React.FC = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Tus Medicinas</Text>
       <View style={styles.calendarContainer}>
-        <CalendarComponent onDayPress={handleDayPress} selectedDate={selectedDay} />
+        <CalendarComponent
+          onDayPress={handleDayPress}
+          selectedDate={selectedDay}
+        />
       </View>
       <TouchableOpacity onPress={handleAddMedication} style={styles.button}>
-        <Image source={require('../../assets/add.png')} style={styles.image} />
+        <Image source={require("../../assets/add.png")} style={styles.image} />
       </TouchableOpacity>
 
       {medications.length > 0 && (
@@ -45,20 +47,20 @@ const Home: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e0ffff',
+    backgroundColor: "#e0ffff",
   },
   title: {
     fontSize: 36,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 25,
-    textAlign: 'center', // Alineación centrada
+    textAlign: "center",
   },
   calendarContainer: {
     paddingHorizontal: 10,
     height: 250,
   },
   button: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 20,
     right: 20,
   },
@@ -69,7 +71,7 @@ const styles = StyleSheet.create({
   medicationInfoContainer: {
     marginTop: 20,
     paddingHorizontal: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
 });
 

@@ -6,7 +6,7 @@ import { es } from "date-fns/locale";
 export const retrieveMedicationsForDay = async (day: Date) => {
   try {
     const medicationsRef = collection(FIRESTORE_DB, "medicines");
-    const dayOfWeek = format(day, "EEEE", { locale: es }); // Formatea el día de la semana usando el locale español
+    const dayOfWeek = format(day, "EEEE", { locale: es }); // formatea el día de la semana usando el locale español
     console.log("Day of the week:", dayOfWeek);
 
     const q = query(medicationsRef, where(`days.${dayOfWeek}`, "==", true));

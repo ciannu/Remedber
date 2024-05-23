@@ -1,7 +1,5 @@
-// MedicationInfo.tsx
-
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
 
 interface Medication {
   name: string;
@@ -17,13 +15,17 @@ interface Props {
 const MedicationInfo: React.FC<Props> = ({ medications }) => {
   return (
     <View style={styles.container}>
-      {medications.map(med => (
+      {medications.map((med) => (
         <View key={med.name} style={styles.medicationItem}>
           <View style={styles.medicationDetailsContainer}>
             <Text style={styles.medicationName}>{med.name}</Text>
-            <Text style={styles.medicationDetails}>Dosis: {med.dose}, Cantidad: {med.amount}</Text>
+            <Text style={styles.medicationDetails}>
+              Dosis: {med.dose}, Cantidad: {med.amount}
+            </Text>
           </View>
-          <View style={styles.hourContainer}><Text style={styles.hour}>{med.hour}</Text></View>
+          <View style={styles.hourContainer}>
+            <Text style={styles.hour}>{med.hour}</Text>
+          </View>
         </View>
       ))}
     </View>
@@ -32,38 +34,38 @@ const MedicationInfo: React.FC<Props> = ({ medications }) => {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    paddingHorizontal: 10, // Margen horizontal para el contenedor principal
+    alignItems: "center",
+    paddingHorizontal: 10,
   },
   medicationItem: {
     marginBottom: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between', // Alinear los elementos horizontalmente
-    alignItems: 'center',
-    paddingHorizontal: 20, // Margen horizontal para cada elemento de medicamento
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
   },
   medicationDetailsContainer: {
-    flex: 1, // Para que el nombre y la dosis/cantidad ocupen el espacio disponible
+    flex: 1,
   },
   medicationName: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 18,
   },
   medicationDetails: {
-    color: '#888',
+    color: "#888",
     fontSize: 15,
   },
   hourContainer: {
-    backgroundColor: '#333',
+    backgroundColor: "#333",
     borderRadius: 10,
     paddingHorizontal: 8,
-    alignItems: 'center', // Alinear la hora verticalmente
-    justifyContent: 'center', // Alinear la hora horizontalmente
-    marginLeft: 10, // Espacio entre el detalle del medicamento y la hora
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 10,
   },
   hour: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
     fontSize: 18,
   },
 });

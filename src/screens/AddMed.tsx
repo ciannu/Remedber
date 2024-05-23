@@ -79,7 +79,7 @@ const AddMed = () => {
         !medType.trim() ||
         !meddose.trim() ||
         !medamount.trim() ||
-        !selectedHour || // Cambiado de selectedDate a selectedHour
+        !selectedHour ||
         !days
       ) {
         Alert.alert("Error", "Por favor rellene todos los campos.");
@@ -160,8 +160,8 @@ const AddMed = () => {
           {showDatePicker && (
             <DateTimePicker
               testID="dateTimePicker"
-              value={new Date()} // Valor fijo, no es necesario cambiarlo
-              mode="time" // Modo solo tiempo
+              value={new Date()} // VALOR FIJO NO NECESARIO CAMBIARLO
+              mode="time" // MODO SOLO TIEMPO
               is24Hour={true}
               display="default"
               onChange={handleDateChange}
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "bold",
     marginTop: 20,
-    marginBottom: 25, 
+    marginBottom: 25,
     textAlign: "center",
     color: "#008080",
   },
@@ -209,20 +209,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 10,
-    marginBottom: 35, 
-    backgroundColor: ColorLuminance("#E0FFFF", 0.8), 
+    marginBottom: 35,
+    backgroundColor: ColorLuminance("#E0FFFF", 0.8),
   },
   datePickerContainer: {
     flexDirection: "row",
-    justifyContent: "center", 
+    justifyContent: "center",
     alignItems: "center",
-    marginBottom: 35, 
+    marginBottom: 35,
   },
   daysContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
-    marginBottom: 25, 
+    marginBottom: 25,
   },
   dayItem: {
     flexDirection: "row",

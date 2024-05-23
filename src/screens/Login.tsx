@@ -14,15 +14,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FIREBASE_AUTH } from "../../FirebaseConfig";
 
 const Login = () => {
-  const [email, setEmail] = useState(""); // State variable to store user email
-  const [password, setPassword] = useState(""); // State variable to store user password
-  const [loading, setLoading] = useState(false); // State variable to manage loading state
-  const [rememberMe, setRememberMe] = useState(false); // State variable to remember user credentials
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
-  const auth = FIREBASE_AUTH; // Firebase authentication instance
-  const navigation = useNavigation(); // Navigation hook
+  const auth = FIREBASE_AUTH;
+  const navigation = useNavigation();
 
-  // Function to sign in with email and password
   const signIn = async () => {
     setLoading(true);
     try {
@@ -40,11 +39,13 @@ const Login = () => {
           },
         },
       ]);
-
-      // Save email and password to AsyncStorage if "Remember Me" is checked
+      {
+        /* }
       if (rememberMe) {
         await AsyncStorage.setItem("email", email);
         await AsyncStorage.setItem("password", password);
+      }
+    */
       }
     } catch (error: any) {
       console.error(error);
@@ -54,12 +55,10 @@ const Login = () => {
     }
   };
 
-  // Function to navigate to sign up screen
   const signUp = () => {
     (navigation as any).navigate("SignUp");
   };
 
-  // Effect hook to check if there are stored credentials
   useEffect(() => {
     const checkStoredCredentials = async () => {
       try {
@@ -68,7 +67,7 @@ const Login = () => {
         if (storedEmail && storedPassword) {
           setEmail(storedEmail);
           setPassword(storedPassword);
-          setRememberMe(true); // Mark as remembered if credentials are found
+          setRememberMe(true);
         }
       } catch (error: any) {
         console.error(
@@ -81,7 +80,6 @@ const Login = () => {
     checkStoredCredentials();
   }, []);
 
-  // Function to handle the change in "Remember Me" state
   const toggleRememberMe = () => {
     setRememberMe((prev) => !prev);
   };
@@ -119,12 +117,10 @@ const Login = () => {
           />
         </View>
 */}
-        {/* Button to sign in */}
         <View style={styles.buttonContainer}>
           <Button title="Sign In" onPress={signIn} color="#008080" />
         </View>
 
-        {/* Button to navigate to sign up */}
         <View style={styles.buttonContainer}>
           <Button title="Sign Up" onPress={signUp} color="#008080" />
         </View>

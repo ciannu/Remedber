@@ -14,14 +14,12 @@ import { addDoc, collection } from "firebase/firestore";
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../../FirebaseConfig";
 
 const CreateProfile = () => {
-  // State variables to store user input
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [gender, setGender] = useState<string>("");
   const [userId, setUserId] = useState<string>("");
   const navigation = useNavigation();
 
-  // Effect hook to get user ID when component mounts
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
@@ -32,12 +30,10 @@ const CreateProfile = () => {
     return () => unsubscribe();
   }, []);
 
-  // Function to handle gender selection
   const handleGenderSelection = (selectedGender: string) => {
     setGender(selectedGender);
   };
 
-  // Function to create a new profile
   const handleCreateProfile = async () => {
     try {
       if (!userId) {
@@ -50,7 +46,6 @@ const CreateProfile = () => {
         return;
       }
 
-      // Add new profile to Firestore
       await addDoc(collection(FIRESTORE_DB, "profiles"), {
         userId: userId,
         name: name,
@@ -58,12 +53,13 @@ const CreateProfile = () => {
         gender: gender,
       });
 
-      // Display success message and navigate back
       Alert.alert("Éxito", "Perfil creado correctamente", [
         {
           text: "OK",
           onPress: () => {
-            (navigation as any).navigate("Profiles", { newProfileCreated: true });
+            (navigation as any).navigate("Profiles", {
+              newProfileCreated: true,
+            });
           },
         },
       ]);
@@ -73,33 +69,27 @@ const CreateProfile = () => {
     }
   };
 
-  // Render create profile form
   return (
     <View style={styles.container}>
       <View style={styles.formContainer}>
-        {/* Logo */}
         <Image
           source={require("../../assets/logo.png")}
           style={styles.logo}
           resizeMode="contain"
         />
-        {/* Title */}
         <Text style={styles.title}>Crea tu perfil</Text>
-        {/* Name input */}
         <TextInput
           value={name}
           style={styles.input}
           placeholder="Introduce tu nombre"
           onChangeText={(text) => setName(text)}
         />
-        {/* Surname input */}
         <TextInput
           value={surname}
           style={styles.input}
           placeholder="Introduce tu apellido"
           onChangeText={(text) => setSurname(text)}
         />
-        {/* Gender selection buttons */}
         <View style={styles.genderContainer}>
           <TouchableOpacity
             style={[
@@ -120,7 +110,6 @@ const CreateProfile = () => {
             <Text style={styles.genderButtonText}>Femenino</Text>
           </TouchableOpacity>
         </View>
-        {/* Button to create profile */}
         <TouchableOpacity
           style={styles.createButton}
           onPress={handleCreateProfile}
@@ -145,7 +134,6 @@ const CreateProfile = () => {
 
 export default CreateProfile;
 
-// Stylesheet
 const styles = StyleSheet.create({
   container: {
     flex: 1,

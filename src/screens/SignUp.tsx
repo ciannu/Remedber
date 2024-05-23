@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { FIREBASE_AUTH, FIRESTORE_DB } from "../../FirebaseConfig"; // Asumiendo que FIRESTORE_DB es la instancia de Firestore
+import { FIREBASE_AUTH, FIRESTORE_DB } from "../../FirebaseConfig";
 import {
   createUserWithEmailAndPassword,
   fetchSignInMethodsForEmail,
@@ -48,7 +48,6 @@ const SignUp = () => {
       );
       console.log(response);
 
-      // Crear un documento en la colección "accounts" con el UID del usuario
       const accountData = { uid: response.user.uid, email: email };
       await setDoc(
         doc(FIRESTORE_DB, "accounts", response.user.uid),
