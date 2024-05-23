@@ -188,19 +188,19 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#E0FFFF",
     paddingHorizontal: 20,
-    paddingTop: 20, // Añadido margen superior
+    paddingTop: 20,
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
     marginTop: 20,
-    marginBottom: 25, // Reducido el margen inferior
+    marginBottom: 25, 
     textAlign: "center",
     color: "#008080",
   },
   subtitle: {
     fontSize: 16,
-    marginBottom: 35, // Reducido el margen inferior
+    marginBottom: 35,
     textAlign: "center",
     color: "#555",
   },
@@ -209,20 +209,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 10,
-    marginBottom: 35, // Añadido más margen inferior
-    backgroundColor: ColorLuminance("#E0FFFF", 0.8), // Cambiado el color de fondo
+    marginBottom: 35, 
+    backgroundColor: ColorLuminance("#E0FFFF", 0.8), 
   },
   datePickerContainer: {
     flexDirection: "row",
-    justifyContent: "center", // Centrado horizontal
+    justifyContent: "center", 
     alignItems: "center",
-    marginBottom: 35, // Añadido más margen inferior
+    marginBottom: 35, 
   },
   daysContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
-    marginBottom: 25, // Añadido más margen inferior
+    marginBottom: 25, 
   },
   dayItem: {
     flexDirection: "row",

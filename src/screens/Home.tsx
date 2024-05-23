@@ -1,26 +1,31 @@
+// Home.tsx
+
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import CalendarComponent from '../components/CalendarComponent';
 import { retrieveMedicationsForDay } from '../utils/medications'; // Importa la función para recuperar medicamentos
-import { format } from 'date-fns';
+import MedicationInfo from '../components/MedicationInfo'; // Importa el componente MedicationInfo
 
 const Home: React.FC = () => {
   const navigation = useNavigation();
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
+  const [medications, setMedications] = useState<any[]>([]);
 
   const handleAddMedication = () => {
     (navigation as any).navigate('AddMed');
   };
 
-  const handleDayPress = (day: Date) => {
+  const handleDayPress = async (day: Date) => {
     setSelectedDay(day);
     // Retrieve medications from Firebase that match the selected day
-    retrieveMedicationsForDay(day);
+    const medications = await retrieveMedicationsForDay(day);
+    setMedications(medications);
   };
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Tus Medicinas</Text>
       <View style={styles.calendarContainer}>
         <CalendarComponent onDayPress={handleDayPress} selectedDate={selectedDay} />
       </View>
@@ -28,7 +33,11 @@ const Home: React.FC = () => {
         <Image source={require('../../assets/add.png')} style={styles.image} />
       </TouchableOpacity>
 
-      {/* falta separar los medicamentos perfiles, porque se asignan todos a la misma cuenta*/}
+      {medications.length > 0 && (
+        <View style={styles.medicationInfoContainer}>
+          <MedicationInfo medications={medications} />
+        </View>
+      )}
     </View>
   );
 };
@@ -38,10 +47,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#e0ffff',
   },
+  title: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    marginTop: 25,
+    textAlign: 'center', // Alineación centrada
+  },
   calendarContainer: {
-    marginTop: 20,
     paddingHorizontal: 10,
-    height: 300,
+    height: 250,
   },
   button: {
     position: 'absolute',
@@ -51,6 +65,11 @@ const styles = StyleSheet.create({
   image: {
     width: 50,
     height: 50,
+  },
+  medicationInfoContainer: {
+    marginTop: 20,
+    paddingHorizontal: 10,
+    alignItems: 'center',
   },
 });
 
