@@ -13,7 +13,7 @@ import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { CheckBox } from "react-native-elements";
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../../FirebaseConfig";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, Timestamp } from "firebase/firestore";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import { ColorLuminance } from "../utils/Color";
@@ -25,32 +25,53 @@ const AddMed = () => {
   const [meddose, setMeddose] = useState("");
   const [selectedHour, setSelectedHour] = useState(
     new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-  ); // solo la hora
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  );
+  const [showTimePicker, setShowTimePicker] = useState(false); // Cambiado a false
+  const [showStartDatePicker, setShowStartDatePicker] = useState(false);
+  const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [days, setDays] = useState<{
     [key: string]: boolean;
   }>({
     lunes: false,
     martes: false,
-    miércoles: false,
+    miercoles: false,
     jueves: false,
     viernes: false,
     sabado: false,
     domingo: false,
   });
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
   const [userId, setUserId] = useState<string>("");
   const navigation = useNavigation();
 
-  const handleDateChange = (event: any, selectedDate: Date | undefined) => {
-    const currentDate = selectedDate || new Date();
-    setShowDatePicker(false);
-    setSelectedHour(
-      currentDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-    ); // Actualizar solo la hora
+  const handleTimeChange = (event: any, selectedDate: Date | undefined) => {
+    setShowTimePicker(false);
+    if (event.type === "set" && selectedDate) {
+      setSelectedHour(
+        selectedDate.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      );
+    }
   };
 
-  const showDatepicker = () => {
-    setShowDatePicker(true);
+  const handleStartDateChange = (
+    event: any,
+    selectedDate: Date | undefined
+  ) => {
+    setShowStartDatePicker(false);
+    if (event.type === "set" && selectedDate) {
+      setStartDate(selectedDate);
+    }
+  };
+
+  const handleEndDateChange = (event: any, selectedDate: Date | undefined) => {
+    setShowEndDatePicker(false);
+    if (event.type === "set" && selectedDate) {
+      setEndDate(selectedDate);
+    }
   };
 
   const toggleDay = (day: string) => {
@@ -92,7 +113,9 @@ const AddMed = () => {
         type: medType,
         dose: meddose,
         amount: medamount,
-        hour: selectedHour, // Solo la hora
+        start_date: Timestamp.fromDate(startDate),
+        end_date: Timestamp.fromDate(endDate),
+        hour: selectedHour,
         days: days,
       });
 
@@ -100,7 +123,7 @@ const AddMed = () => {
         {
           text: "OK",
           onPress: () => {
-            (navigation as any).navigate("Home"); //falta poner boolean para fetch medicamentos en HOME
+            (navigation as any).navigate("Home");
           },
         },
       ]);
@@ -153,18 +176,18 @@ const AddMed = () => {
         />
         <View style={styles.datePickerContainer}>
           <Button
-            onPress={showDatepicker}
+            onPress={() => setShowTimePicker(true)}
             title="Seleccionar Hora"
             color="#008080"
           />
-          {showDatePicker && (
+          {showTimePicker && (
             <DateTimePicker
-              testID="dateTimePicker"
-              value={new Date()} // VALOR FIJO NO NECESARIO CAMBIARLO
-              mode="time" // MODO SOLO TIEMPO
+              testID="timePicker"
+              value={new Date()}
+              mode="time"
               is24Hour={true}
               display="default"
-              onChange={handleDateChange}
+              onChange={handleTimeChange}
             />
           )}
         </View>
@@ -176,6 +199,40 @@ const AddMed = () => {
             </View>
           ))}
         </View>
+        <View style={styles.datePickerContainer}>
+          <Text style={styles.label}>Fecha de inicio del tratamiento:</Text>
+          <Button
+            onPress={() => setShowStartDatePicker(true)}
+            title="Seleccionar Fecha de Inicio"
+            color="#008080"
+          />
+          {showStartDatePicker && (
+            <DateTimePicker
+              testID="startDatePicker"
+              value={startDate}
+              mode="date"
+              display="default"
+              onChange={handleStartDateChange}
+            />
+          )}
+        </View>
+        <View style={styles.datePickerContainer}>
+          <Text style={styles.label}>Fecha de fin del tratamiento:</Text>
+          <Button
+            onPress={() => setShowEndDatePicker(true)}
+            title="Seleccionar Fecha de Fin"
+            color="#008080"
+          />
+          {showEndDatePicker && (
+            <DateTimePicker
+              testID="endDatePicker"
+              value={endDate}
+              mode="date"
+              display="default"
+              onChange={handleEndDateChange}
+            />
+          )}
+        </View>
         <TouchableOpacity style={styles.saveButton} onPress={saveMedication}>
           <Text style={styles.saveButtonText}>Guardar Medicamento</Text>
         </TouchableOpacity>
@@ -183,6 +240,7 @@ const AddMed = () => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -213,9 +271,6 @@ const styles = StyleSheet.create({
     backgroundColor: ColorLuminance("#E0FFFF", 0.8),
   },
   datePickerContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
     marginBottom: 35,
   },
   daysContainer: {
@@ -228,6 +283,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginRight: 20,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 10,
+    color: "#333",
   },
   saveButton: {
     backgroundColor: "#008080",

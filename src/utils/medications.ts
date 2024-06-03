@@ -6,27 +6,36 @@ import { es } from "date-fns/locale";
 export const retrieveMedicationsForDay = async (day: Date) => {
   try {
     const medicationsRef = collection(FIRESTORE_DB, "medicines");
-    const dayOfWeek = format(day, "EEEE", { locale: es }); // formatea el día de la semana usando el locale español
-    console.log("Day of the week:", dayOfWeek);
+    const dayOfWeek = format(day, "EEEE", { locale: es }).toLowerCase();
 
-    const q = query(medicationsRef, where(`days.${dayOfWeek}`, "==", true));
+    // Verifica que el día de la semana esté formateado correctamente
+    const validDays = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"];
+    if (!validDays.includes(dayOfWeek)) {
+      throw new Error(`Día de la semana no válido: ${dayOfWeek}`);
+    }
+
+    const q = query(
+      medicationsRef,
+      where(`days.${dayOfWeek}`, "==", true),
+      where("start_date", "<=", day),
+      where("end_date", ">=", day)
+    );
+
     const querySnapshot = await getDocs(q);
-
     const medicationsArray: any[] = [];
+
     querySnapshot.forEach((doc) => {
       medicationsArray.push(doc.data());
-      console.log("Medication data:", doc.data());
     });
 
-    if (medicationsArray.length > 0) {
-      console.log(medicationsArray);
-      return medicationsArray;
+    return medicationsArray;
+  } catch (error: any) { // Especifica el tipo de error como 'Error'
+    console.error("Error recuperando medicamentos", error);
+    if (error.message.includes('The query requires an index')) {
+      console.error("Necesitas crear un índice compuesto en Firestore. Sigue este enlace para crearlo:", error.message);
+      throw new Error("Necesitas crear un índice compuesto en Firestore. Sigue este enlace para crearlo: " + error.message);
     } else {
-      console.log("No medications found for the selected day");
-      return [];
+      throw error;
     }
-  } catch (error) {
-    console.error("Error retrieving medications:", error);
-    throw error;
   }
 };
