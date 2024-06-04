@@ -6,6 +6,10 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "react-native";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+import {
+  registerForPushNotificationsAsync,
+  schedulePushNotification,
+} from "./src/utils/notifications";
 
 import Login from "./src/screens/Login";
 import SignUp from "./src/screens/SignUp";
@@ -43,6 +47,7 @@ export default function App() {
         console.error("Error loading fonts:", error);
       }
     }
+    registerForPushNotificationsAsync();
     loadFonts();
   }, []);
 
