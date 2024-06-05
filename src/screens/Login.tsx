@@ -11,6 +11,7 @@ import {
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import { FIREBASE_AUTH } from "../../FirebaseConfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -26,18 +27,12 @@ const Login = () => {
       const response = await signInWithEmailAndPassword(auth, email, password);
       console.log(response);
       const userId = response.user.uid;
-
       const user = response.user;
       if (!user.emailVerified) {
-        Alert.alert(
-          "Error",
-          "Verifica tu correo electrónico antes de iniciar sesión"
-        );
+        Alert.alert("Error", "Verifica tu correo electrónico antes de iniciar sesión");
         return;
       }
-
       console.log("USER ID: ", userId);
-
       Alert.alert("Éxito", "Sesión iniciada correctamente", [
         {
           text: "OK",
@@ -46,6 +41,8 @@ const Login = () => {
           },
         },
       ]);
+  
+      await AsyncStorage.setItem("accessToken", "token_value_here"); // Guarda el token de acceso en AsyncStorage al iniciar sesión
     } catch (error: any) {
       console.error(error);
       alert("Login fallido: " + error.message);

@@ -6,6 +6,8 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "react-native";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 import {
   registerForPushNotificationsAsync,
@@ -31,9 +33,36 @@ export default function App() {
 
   // observar cambios en la autenticacion
   useEffect(() => {
-    onAuthStateChanged(FIREBASE_AUTH, (user) => {
-      console.log("user", user); // log usuario info
-      setUser(user); // actualizar estado usuario
+    const checkAuthState = async () => {
+      try {
+        const token = await AsyncStorage.getItem("accessToken"); // Verifica el token de acceso en AsyncStorage
+        if (token) {
+          setUser({} as User); // Si hay un token, establece el estado del usuario como autenticado
+        }
+      } catch (error) {
+        console.error("Error al verificar el estado de autenticación:", error);
+      }
+    };
+    checkAuthState();
+  }, []);
+
+  useEffect(() => {
+    onAuthStateChanged(FIREBASE_AUTH, async (user) => {
+      if (user) {
+        setUser(user);
+        try {
+          await AsyncStorage.setItem("accessToken", "token_value_here"); // Almacena el token de acceso en AsyncStorage
+        } catch (error) {
+          console.error("Error al almacenar el token de acceso:", error);
+        }
+      } else {
+        setUser(null);
+        try {
+          await AsyncStorage.removeItem("accessToken"); // Elimina el token de acceso al cerrar sesión
+        } catch (error) {
+          console.error("Error al eliminar el token de acceso:", error);
+        }
+      }
     });
   }, []);
 
