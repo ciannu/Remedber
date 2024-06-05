@@ -93,8 +93,8 @@ const Profiles = () => {
     }
   };
 
-  const handleProfileNavigation = () => {
-    (navigation as any).navigate("Home");
+  const handleProfileNavigation = (profileName: string) => {
+    (navigation as any).navigate("Home", {profileName});
   };
 
   const navigateToCreateProfile = () => {
@@ -122,7 +122,8 @@ const Profiles = () => {
         <View key={profile.id} style={styles.profileContainer}>
           <TouchableOpacity
             style={styles.profileButton}
-            onPress={handleProfileNavigation}
+            onPress={() => handleProfileNavigation(profile.name)}
+
           >
             <Text style={styles.profileButtonText}>
               {profile.name} {profile.surname}

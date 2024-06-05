@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
@@ -26,6 +26,12 @@ const Login = () => {
       const response = await signInWithEmailAndPassword(auth, email, password);
       console.log(response);
       const userId = response.user.uid;
+
+      const user = response.user;
+      if (!user.emailVerified) {
+        Alert.alert("Error", "Verifica tu correo electrónico antes de iniciar sesión");
+        return;
+      }
 
       console.log("USER ID: ", userId);
 

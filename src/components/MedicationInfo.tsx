@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
 
 interface Medication {
   name: string;
@@ -10,9 +10,29 @@ interface Medication {
 
 interface Props {
   medications: Medication[];
+  onDelete: (medicationName: string) => void;
 }
 
-const MedicationInfo: React.FC<Props> = ({ medications }) => {
+const MedicationInfo: React.FC<Props> = ({ medications, onDelete }) => {
+  const handleDelete = (medicationName: string) => {
+    // Mostrar una alerta para confirmar la eliminación
+    Alert.alert(
+      "Eliminar medicamento",
+      `¿Estás seguro de que deseas eliminar ${medicationName}?`,
+      [
+        {
+          text: "Cancelar",
+          style: "cancel"
+        },
+        {
+          text: "Eliminar",
+          onPress: () => onDelete(medicationName)
+        }
+      ],
+      { cancelable: false }
+    );
+  };
+
   return (
     <View style={styles.container}>
       {medications.map((med) => (
@@ -26,6 +46,12 @@ const MedicationInfo: React.FC<Props> = ({ medications }) => {
           <View style={styles.hourContainer}>
             <Text style={styles.hour}>{med.hour}</Text>
           </View>
+          <TouchableOpacity onPress={() => handleDelete(med.name)}>
+            <Image
+              source={require("../../assets/delete_icon.png")}
+              style={styles.deleteIcon}
+            />
+          </TouchableOpacity>
         </View>
       ))}
     </View>
@@ -67,6 +93,10 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: 18,
+  },
+  deleteIcon: {
+    width: 24,
+    height: 24,
   },
 });
 

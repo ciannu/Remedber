@@ -12,12 +12,14 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { CheckBox } from "react-native-elements";
-import { FIREBASE_AUTH, FIRESTORE_DB } from "../../FirebaseConfig";
+import { FIRESTORE_DB } from "../../FirebaseConfig";
 import { addDoc, collection, Timestamp } from "firebase/firestore";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native"; // Importa useRoute
 import { ColorLuminance } from "../utils/Color";
 import { schedulePushNotification } from "../utils/notifications";
+import { useNavigationContainerRef } from '@react-navigation/native';
+
 
 const AddMed = () => {
   const [medname, setMedname] = useState("");
@@ -27,7 +29,7 @@ const AddMed = () => {
   const [selectedHour, setSelectedHour] = useState(
     new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
   );
-  const [showTimePicker, setShowTimePicker] = useState(false); // Cambiado a false
+  const [showTimePicker, setShowTimePicker] = useState(false);
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [days, setDays] = useState<{
@@ -44,7 +46,10 @@ const AddMed = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [userId, setUserId] = useState<string>("");
-  const navigation = useNavigation();
+  const navigation = useNavigationContainerRef();
+  
+  const route = useRoute();
+  const { profileName }: { profileName?: string } = route.params || {};
 
   const handleTimeChange = (event: any, selectedDate: Date | undefined) => {
     setShowTimePicker(false);
@@ -134,6 +139,7 @@ const AddMed = () => {
         end_date: Timestamp.fromDate(strippedEndDate),
         hour: selectedHour,
         days: days,
+        profileName: profileName,
       });
 
       for (const day in days) {
@@ -152,11 +158,19 @@ const AddMed = () => {
                 hour,
                 minute
               );
-              await schedulePushNotification(
-                medname,
-                medType,
-                notificationDate
-              );
+
+              if (profileName) {
+                await schedulePushNotification(
+                  medname,
+                  medType,
+                  profileName,
+                  notificationDate,
+                  navigation
+                );
+                
+              } else {
+                console.error('El nombre de perfil es undefined.');
+              }
             }
             currentDate.setDate(currentDate.getDate() + 1);
           }
@@ -167,7 +181,7 @@ const AddMed = () => {
         {
           text: "OK",
           onPress: () => {
-            (navigation as any).navigate("Home");
+            (navigation as any).navigate("Home", { profileName });
           },
         },
       ]);

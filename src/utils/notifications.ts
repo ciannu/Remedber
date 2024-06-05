@@ -3,6 +3,7 @@ import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import Constants from "expo-constants";
+import { useNavigation } from "@react-navigation/native";
 
 export async function registerForPushNotificationsAsync() {
   let token;
@@ -45,36 +46,43 @@ export async function registerForPushNotificationsAsync() {
 }
 
 Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
+  
+  handleNotification: async (notification) => {
+    return {
+      shouldShowAlert: true,
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+    };
+  },
 });
+
+import { NavigationContainerRef } from '@react-navigation/native';
 
 export async function schedulePushNotification(
   name: string,
   type: string,
-  date: Date
+  profileName: string,
+  date: Date,
+  navigation: NavigationContainerRef<any> // Agrega navigation como parámetro
 ) {
   const trigger = new Date(date);
 
-  let body = "";
+  let body = `${profileName} te toca `;
   switch (type) {
     case "pastilla":
-      body = `Te toca tomar la pastilla ${name}`;
+      body += `tomar la pastilla ${name}`;
       break;
     case "gotas":
-      body = `Te toca ponerte las gotas ${name}`;
+      body += `ponerte las gotas ${name}`;
       break;
     case "crema":
-      body = `Te toca aplicar la crema ${name}`;
+      body += `aplicar la crema ${name}`;
       break;
     case "inyeccion":
-      body = `Te toca ponerte la inyección ${name}`;
+      body += `ponerte la inyección ${name}`;
       break;
     default:
-      body = `Te toca tomar el medicamento ${name}`;
+      body += `tomar el medicamento ${name}`;
   }
 
   await Notifications.scheduleNotificationAsync({
@@ -85,4 +93,7 @@ export async function schedulePushNotification(
     },
     trigger,
   });
+
+  // Navegar a la página correspondiente después de programar la notificación
+  navigation.navigate("Home", { profileName });
 }

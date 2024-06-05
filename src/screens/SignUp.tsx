@@ -14,6 +14,7 @@ import { FIREBASE_AUTH, FIRESTORE_DB } from "../../FirebaseConfig";
 import {
   createUserWithEmailAndPassword,
   fetchSignInMethodsForEmail,
+  sendEmailVerification
 } from "firebase/auth";
 import { setDoc, doc } from "firebase/firestore";
 
@@ -33,7 +34,7 @@ const SignUp = () => {
         throw new Error("Las contraseñas no coinciden");
       }
       if (password.length < 6) {
-        throw new Error("La contraseña debe tener al menos 6 carácteres");
+        throw new Error("La contraseña debe tener al menos 6 caracteres");
       }
 
       const signInMethods = await fetchSignInMethodsForEmail(auth, email);
@@ -48,13 +49,20 @@ const SignUp = () => {
       );
       console.log(response);
 
+      const user = auth.currentUser;
+      if (user) {
+        await sendEmailVerification(user);
+      } else {
+        throw new Error("El usuario no está autenticado");
+      }
+
       const accountData = { uid: response.user.uid, email: email };
       await setDoc(
         doc(FIRESTORE_DB, "accounts", response.user.uid),
         accountData
       );
 
-      Alert.alert("Éxito", "Cuenta creada correctamente", [
+      Alert.alert("Éxito", "Cuenta creada correctamente. Verifica tu correo electrónico antes de iniciar sesión.", [
         {
           text: "OK",
           onPress: () => {

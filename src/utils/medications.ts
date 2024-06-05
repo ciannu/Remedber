@@ -24,7 +24,7 @@ interface Medication {
   profileId: string; // Cambiado de userId a profileId
 }
 
-export const retrieveMedicationsForDay = async (day: Date): Promise<Medication[]> => {
+export const retrieveMedicationsForDay = async (day: Date, profileName: string): Promise<Medication[]> => {
   try {
     const medicationsRef = collection(FIRESTORE_DB, "medicines");
     const dayOfWeek = format(day, "EEEE", { locale: es }).toLowerCase();
@@ -51,6 +51,7 @@ export const retrieveMedicationsForDay = async (day: Date): Promise<Medication[]
       where(`days.${normalizedDayOfWeek}`, "==", true),
       where("start_date", "<=", day),
       where("end_date", ">=", day),
+      where("profileName", "==", profileName),
     );
     
     const querySnapshot = await getDocs(q);
