@@ -3,7 +3,6 @@ import { FIRESTORE_DB } from "../../FirebaseConfig";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
-// Define el tipo de un medicamento
 interface Medication {
   amount: string;
   days: {
@@ -21,15 +20,20 @@ interface Medication {
   name: string;
   start_date: any;
   type: string;
-  profileId: string; // Cambiado de userId a profileId
+  profileId: string;
 }
 
-export const retrieveMedicationsForDay = async (day: Date, profileName: string): Promise<Medication[]> => {
+export const retrieveMedicationsForDay = async (
+  day: Date,
+  profileName: string
+): Promise<Medication[]> => {
   try {
     const medicationsRef = collection(FIRESTORE_DB, "medicines");
     const dayOfWeek = format(day, "EEEE", { locale: es }).toLowerCase();
 
-    const normalizedDayOfWeek = dayOfWeek.replace("miércoles", "miercoles").replace("sábado", "sabado");
+    const normalizedDayOfWeek = dayOfWeek
+      .replace("miércoles", "miercoles")
+      .replace("sábado", "sabado");
 
     const validDays = [
       "lunes",
@@ -51,9 +55,9 @@ export const retrieveMedicationsForDay = async (day: Date, profileName: string):
       where(`days.${normalizedDayOfWeek}`, "==", true),
       where("start_date", "<=", day),
       where("end_date", ">=", day),
-      where("profileName", "==", profileName),
+      where("profileName", "==", profileName)
     );
-    
+
     const querySnapshot = await getDocs(q);
     const medicationsArray: Medication[] = [];
 
@@ -63,7 +67,9 @@ export const retrieveMedicationsForDay = async (day: Date, profileName: string):
     });
 
     if (medicationsArray.length === 0) {
-      console.log(`No se encontraron medicamentos para el día: ${normalizedDayOfWeek}`);
+      console.log(
+        `No se encontraron medicamentos para el día: ${normalizedDayOfWeek}`
+      );
     }
 
     return medicationsArray;

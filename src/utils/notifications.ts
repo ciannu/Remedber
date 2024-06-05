@@ -1,9 +1,7 @@
-// src/utils/notifications.ts
 import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import Constants from "expo-constants";
-import { useNavigation } from "@react-navigation/native";
 
 export async function registerForPushNotificationsAsync() {
   let token;
@@ -46,7 +44,6 @@ export async function registerForPushNotificationsAsync() {
 }
 
 Notifications.setNotificationHandler({
-  
   handleNotification: async (notification) => {
     return {
       shouldShowAlert: true,
@@ -56,14 +53,11 @@ Notifications.setNotificationHandler({
   },
 });
 
-import { NavigationContainerRef } from '@react-navigation/native';
-
 export async function schedulePushNotification(
   name: string,
   type: string,
   profileName: string,
-  date: Date,
-  navigation: NavigationContainerRef<any> // Agrega navigation como parámetro
+  date: Date
 ) {
   const trigger = new Date(date);
 
@@ -93,7 +87,4 @@ export async function schedulePushNotification(
     },
     trigger,
   });
-
-  // Navegar a la página correspondiente después de programar la notificación
-  navigation.navigate("Home", { profileName });
 }

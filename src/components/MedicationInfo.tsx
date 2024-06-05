@@ -1,5 +1,12 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Alert,
+} from "react-native";
 
 interface Medication {
   name: string;
@@ -15,19 +22,18 @@ interface Props {
 
 const MedicationInfo: React.FC<Props> = ({ medications, onDelete }) => {
   const handleDelete = (medicationName: string) => {
-    // Mostrar una alerta para confirmar la eliminación
     Alert.alert(
       "Eliminar medicamento",
       `¿Estás seguro de que deseas eliminar ${medicationName}?`,
       [
         {
           text: "Cancelar",
-          style: "cancel"
+          style: "cancel",
         },
         {
           text: "Eliminar",
-          onPress: () => onDelete(medicationName)
-        }
+          onPress: () => onDelete(medicationName),
+        },
       ],
       { cancelable: false }
     );

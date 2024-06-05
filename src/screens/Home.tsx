@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, TouchableOpacity, Image, Text, Alert } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Text,
+  Alert,
+} from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import CalendarComponent from "../components/CalendarComponent";
 import { retrieveMedicationsForDay } from "../utils/medications";
 import MedicationInfo from "../components/MedicationInfo";
+import { deleteDoc, doc, getFirestore } from "firebase/firestore";
 
 const Home = () => {
   const navigation = useNavigation();
@@ -23,14 +31,14 @@ const Home = () => {
   }, [selectedDay, profileName]);
 
   const handleAddMedication = () => {
-    ( navigation as any ).navigate("AddMed", { profileName });
+    (navigation as any).navigate("AddMed", { profileName });
   };
 
   const handleDayPress = (day: Date) => {
     setSelectedDay(day);
   };
 
-  const handleDeleteMedication = (medicationName: string) => {
+  const handleDeleteMedication = async (medicationName: string) => {
     Alert.alert(
       "Confirmar eliminación",
       `¿Estás seguro de que quieres eliminar ${medicationName}?`,
@@ -41,14 +49,22 @@ const Home = () => {
         },
         {
           text: "Eliminar",
-          onPress: () => {
-            // Aquí deberías implementar la lógica para eliminar el medicamento
+          onPress: async () => {
+            try {
+              const firestore = getFirestore();
+              const medicationRef = doc(firestore, "medicines", medicationName);
+              await deleteDoc(medicationRef);
+              console.log(
+                `Medicamento ${medicationName} eliminado correctamente.`
+              );
+            } catch (error) {
+              console.error("Error al eliminar el medicamento:", error);
+            }
           },
         },
       ]
     );
   };
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tus Medicinas</Text>
@@ -65,7 +81,10 @@ const Home = () => {
 
       {medications.length > 0 && (
         <View style={styles.medicationInfoContainer}>
-          <MedicationInfo medications={medications} onDelete={handleDeleteMedication} />
+          <MedicationInfo
+            medications={medications}
+            onDelete={handleDeleteMedication}
+          />
         </View>
       )}
     </View>

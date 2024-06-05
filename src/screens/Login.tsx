@@ -29,7 +29,10 @@ const Login = () => {
 
       const user = response.user;
       if (!user.emailVerified) {
-        Alert.alert("Error", "Verifica tu correo electrónico antes de iniciar sesión");
+        Alert.alert(
+          "Error",
+          "Verifica tu correo electrónico antes de iniciar sesión"
+        );
         return;
       }
 

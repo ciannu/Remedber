@@ -78,23 +78,39 @@ const Profiles = () => {
     fetchUserProfiles();
   }, [fetchUserProfiles]);
 
-  // Function to delete a profile
   const handleDeleteProfile = async (profileId: string) => {
-    try {
-      await deleteDoc(doc(getFirestore(FIREBASE_APP), "profiles", profileId));
-      // Update the profiles list after deleting one
-      setUserProfiles((prevProfiles) =>
-        prevProfiles.filter((profile) => profile.id !== profileId)
-      );
-      Alert.alert("Éxito", "Perfil borrado correctamente");
-    } catch (error) {
-      console.error("Error borrando el perfil", error);
-      Alert.alert("Error", "Hubo un problema borrando el perfil");
-    }
+    Alert.alert(
+      "Confirmar",
+      "¿Estás seguro de que quieres borrar este perfil?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Aceptar",
+          onPress: async () => {
+            try {
+              await deleteDoc(
+                doc(getFirestore(FIREBASE_APP), "profiles", profileId)
+              );
+
+              setUserProfiles((prevProfiles) =>
+                prevProfiles.filter((profile) => profile.id !== profileId)
+              );
+              Alert.alert("Éxito", "Perfil borrado correctamente");
+            } catch (error) {
+              console.error("Error borrando el perfil", error);
+              Alert.alert("Error", "Hubo un problema borrando el perfil");
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleProfileNavigation = (profileName: string) => {
-    (navigation as any).navigate("Home", {profileName});
+    (navigation as any).navigate("Home", { profileName });
   };
 
   const navigateToCreateProfile = () => {
@@ -123,7 +139,6 @@ const Profiles = () => {
           <TouchableOpacity
             style={styles.profileButton}
             onPress={() => handleProfileNavigation(profile.name)}
-
           >
             <Text style={styles.profileButtonText}>
               {profile.name} {profile.surname}

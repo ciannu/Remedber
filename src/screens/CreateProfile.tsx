@@ -117,7 +117,6 @@ const CreateProfile = () => {
           <Text style={styles.createButtonText}>Crear perfil</Text>
         </TouchableOpacity>
       </View>
-      {/* Back button */}
       <TouchableOpacity
         style={styles.backButton}
         onPress={() => navigation.goBack()}

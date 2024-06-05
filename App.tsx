@@ -6,6 +6,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "react-native";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+
 import {
   registerForPushNotificationsAsync,
   schedulePushNotification,
@@ -50,6 +51,13 @@ export default function App() {
     registerForPushNotificationsAsync();
     loadFonts();
   }, []);
+
+  useEffect(() => {
+    // Verificar si hay un usuario autenticado al cargar la aplicación
+    if (user) {
+      // Si hay un usuario autenticado, no es necesario hacer ninguna navegación aquí
+    }
+  }, [user]);
 
   if (!fontsLoaded) {
     return null;

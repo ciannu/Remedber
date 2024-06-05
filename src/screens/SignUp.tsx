@@ -14,7 +14,7 @@ import { FIREBASE_AUTH, FIRESTORE_DB } from "../../FirebaseConfig";
 import {
   createUserWithEmailAndPassword,
   fetchSignInMethodsForEmail,
-  sendEmailVerification
+  sendEmailVerification,
 } from "firebase/auth";
 import { setDoc, doc } from "firebase/firestore";
 
@@ -62,14 +62,18 @@ const SignUp = () => {
         accountData
       );
 
-      Alert.alert("Éxito", "Cuenta creada correctamente. Verifica tu correo electrónico antes de iniciar sesión.", [
-        {
-          text: "OK",
-          onPress: () => {
-            navigation.goBack();
+      Alert.alert(
+        "Éxito",
+        "Cuenta creada correctamente. Verifica tu correo electrónico antes de iniciar sesión.",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              navigation.goBack();
+            },
           },
-        },
-      ]);
+        ]
+      );
     } catch (error: any) {
       if (error.code === "auth/email-already-in-use") {
         alert("Una cuenta con ese correo ya existe");

@@ -18,8 +18,6 @@ import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { useNavigation, useRoute } from "@react-navigation/native"; // Importa useRoute
 import { ColorLuminance } from "../utils/Color";
 import { schedulePushNotification } from "../utils/notifications";
-import { useNavigationContainerRef } from '@react-navigation/native';
-
 
 const AddMed = () => {
   const [medname, setMedname] = useState("");
@@ -46,8 +44,7 @@ const AddMed = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [userId, setUserId] = useState<string>("");
-  const navigation = useNavigationContainerRef();
-  
+  const navigation = useNavigation();
   const route = useRoute();
   const { profileName }: { profileName?: string } = route.params || {};
 
@@ -130,7 +127,7 @@ const AddMed = () => {
       );
 
       await addDoc(collection(FIRESTORE_DB, "medicines"), {
-        userId: userId, // Utiliza userId como profileId
+        userId: userId,
         name: medname,
         type: medType,
         dose: meddose,
@@ -164,12 +161,10 @@ const AddMed = () => {
                   medname,
                   medType,
                   profileName,
-                  notificationDate,
-                  navigation
+                  notificationDate
                 );
-                
               } else {
-                console.error('El nombre de perfil es undefined.');
+                console.error("El nombre de perfil es undefined.");
               }
             }
             currentDate.setDate(currentDate.getDate() + 1);
