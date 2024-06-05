@@ -18,7 +18,7 @@ import Home from "./src/screens/Home";
 import CreateProfile from "./src/screens/CreateProfile";
 import Profiles from "./src/screens/Profiles";
 import AddMed from "./src/screens/AddMed";
-
+import History from "./src/screens/History"
 import { FIREBASE_AUTH } from "./FirebaseConfig";
 import { FIRESTORE_DB } from "./FirebaseConfig";
 
@@ -53,9 +53,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    // Verificar si hay un usuario autenticado al cargar la aplicación
     if (user) {
-      // Si hay un usuario autenticado, no es necesario hacer ninguna navegación aquí
     }
   }, [user]);
 
@@ -78,6 +76,7 @@ export default function App() {
           <Stack.Screen name="CreateProfile" component={CreateProfile} />
           <Stack.Screen name="Profiles" component={Profiles} />
           <Stack.Screen name="AddMed" component={AddMed} />
+          <Stack.Screen name="History" component={History} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

@@ -9,6 +9,7 @@ import {
 } from "react-native";
 
 interface Medication {
+  id: string;
   name: string;
   dose: string;
   amount: number;
@@ -17,14 +18,15 @@ interface Medication {
 
 interface Props {
   medications: Medication[];
-  onDelete: (medicationName: string) => void;
+  onDelete: (id: string) => void;
 }
 
 const MedicationInfo: React.FC<Props> = ({ medications, onDelete }) => {
-  const handleDelete = (medicationName: string) => {
+
+  const handleDelete = (medicationId: string) => {
     Alert.alert(
-      "Eliminar medicamento",
-      `¿Estás seguro de que deseas eliminar ${medicationName}?`,
+      "Confirmar eliminación",
+      "¿Estás seguro de que deseas eliminar este medicamento?",
       [
         {
           text: "Cancelar",
@@ -32,17 +34,17 @@ const MedicationInfo: React.FC<Props> = ({ medications, onDelete }) => {
         },
         {
           text: "Eliminar",
-          onPress: () => onDelete(medicationName),
+          style: "destructive",
+          onPress: () => onDelete(medicationId),
         },
-      ],
-      { cancelable: false }
+      ]
     );
   };
 
   return (
     <View style={styles.container}>
       {medications.map((med) => (
-        <View key={med.name} style={styles.medicationItem}>
+        <View key={med.id} style={styles.medicationItem}>
           <View style={styles.medicationDetailsContainer}>
             <Text style={styles.medicationName}>{med.name}</Text>
             <Text style={styles.medicationDetails}>
@@ -52,7 +54,7 @@ const MedicationInfo: React.FC<Props> = ({ medications, onDelete }) => {
           <View style={styles.hourContainer}>
             <Text style={styles.hour}>{med.hour}</Text>
           </View>
-          <TouchableOpacity onPress={() => handleDelete(med.name)}>
+          <TouchableOpacity onPress={() => handleDelete(med.id)}>
             <Image
               source={require("../../assets/delete_icon.png")}
               style={styles.deleteIcon}

@@ -2,8 +2,10 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { FIRESTORE_DB } from "../../FirebaseConfig";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { doc, deleteDoc } from "firebase/firestore";
 
 interface Medication {
+  id: string; // Agregar esta línea
   amount: string;
   days: {
     lunes: boolean;
@@ -63,7 +65,7 @@ export const retrieveMedicationsForDay = async (
 
     querySnapshot.forEach((doc) => {
       console.log(`Medicamento encontrado: ${doc.data().name}`);
-      medicationsArray.push(doc.data() as Medication);
+      medicationsArray.push({ id: doc.id, ...doc.data() } as Medication); // Agregar el ID del documento
     });
 
     if (medicationsArray.length === 0) {
@@ -87,5 +89,15 @@ export const retrieveMedicationsForDay = async (
     } else {
       throw error;
     }
+  }
+};
+export const deleteMedication = async (medicationId: string): Promise<void> => {
+  try {
+    const medicationRef = doc(FIRESTORE_DB, "medicines", medicationId);
+    await deleteDoc(medicationRef);
+    console.log(`Medicamento con ID ${medicationId} eliminado`);
+  } catch (error) {
+    console.error("Error eliminando el medicamento", error);
+    throw new Error("No se pudo eliminar el medicamento");
   }
 };

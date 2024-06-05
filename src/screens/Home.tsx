@@ -1,17 +1,9 @@
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  Text,
-  Alert,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import CalendarComponent from "../components/CalendarComponent";
-import { retrieveMedicationsForDay } from "../utils/medications";
+import { retrieveMedicationsForDay, deleteMedication } from "../utils/medications";
 import MedicationInfo from "../components/MedicationInfo";
-import { deleteDoc, doc, getFirestore } from "firebase/firestore";
 
 const Home = () => {
   const navigation = useNavigation();
@@ -38,42 +30,21 @@ const Home = () => {
     setSelectedDay(day);
   };
 
-  const handleDeleteMedication = async (medicationName: string) => {
-    Alert.alert(
-      "Confirmar eliminación",
-      `¿Estás seguro de que quieres eliminar ${medicationName}?`,
-      [
-        {
-          text: "Cancelar",
-          style: "cancel",
-        },
-        {
-          text: "Eliminar",
-          onPress: async () => {
-            try {
-              const firestore = getFirestore();
-              const medicationRef = doc(firestore, "medicines", medicationName);
-              await deleteDoc(medicationRef);
-              console.log(
-                `Medicamento ${medicationName} eliminado correctamente.`
-              );
-            } catch (error) {
-              console.error("Error al eliminar el medicamento:", error);
-            }
-          },
-        },
-      ]
-    );
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteMedication(id);
+      setMedications((prevMeds) => prevMeds.filter((med) => med.id !== id));
+    } catch (error) {
+      Alert.alert("Error", "No se pudo eliminar el medicamento");
+    }
   };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tus Medicinas</Text>
       <Text style={styles.subtitle}>Perfil: {profileName}</Text>
       <View style={styles.calendarContainer}>
-        <CalendarComponent
-          onDayPress={handleDayPress}
-          selectedDate={selectedDay}
-        />
+        <CalendarComponent onDayPress={handleDayPress} selectedDate={selectedDay} />
       </View>
       <TouchableOpacity onPress={handleAddMedication} style={styles.button}>
         <Image source={require("../../assets/add.png")} style={styles.image} />
@@ -81,10 +52,7 @@ const Home = () => {
 
       {medications.length > 0 && (
         <View style={styles.medicationInfoContainer}>
-          <MedicationInfo
-            medications={medications}
-            onDelete={handleDeleteMedication}
-          />
+          <MedicationInfo medications={medications} onDelete={handleDelete} />
         </View>
       )}
     </View>
