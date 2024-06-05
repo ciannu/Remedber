@@ -52,13 +52,36 @@ Notifications.setNotificationHandler({
   }),
 });
 
-export async function schedulePushNotification(date: Date) {
+export async function schedulePushNotification(
+  name: string,
+  type: string,
+  date: Date
+) {
   const trigger = new Date(date);
+
+  let body = "";
+  switch (type) {
+    case "pastilla":
+      body = `Te toca tomar la pastilla ${name}`;
+      break;
+    case "gotas":
+      body = `Te toca ponerte las gotas ${name}`;
+      break;
+    case "crema":
+      body = `Te toca aplicar la crema ${name}`;
+      break;
+    case "inyeccion":
+      body = `Te toca ponerte la inyección ${name}`;
+      break;
+    default:
+      body = `Te toca tomar el medicamento ${name}`;
+  }
+
   await Notifications.scheduleNotificationAsync({
     content: {
-      title: "You've got notification! 🔔",
-      body: "JOAN GILIPOLLAS",
-      data: { data: "goes here" },
+      title: "Recordatorio de Medicamento",
+      body,
+      data: { name, type },
     },
     trigger,
   });

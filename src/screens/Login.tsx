@@ -1,4 +1,3 @@
-// src/screens/Login.tsx
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -8,22 +7,15 @@ import {
   KeyboardAvoidingView,
   Image,
   Alert,
-  Platform,
 } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FIREBASE_AUTH } from "../../FirebaseConfig";
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { schedulePushNotification } from "../utils/notifications";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
-  const [showPicker, setShowPicker] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
 
   const auth = FIREBASE_AUTH;
   const navigation = useNavigation();
@@ -45,11 +37,6 @@ const Login = () => {
           },
         },
       ]);
-
-      if (rememberMe) {
-        await AsyncStorage.setItem("email", email);
-        await AsyncStorage.setItem("password", password);
-      }
     } catch (error: any) {
       console.error(error);
       alert("Login fallido: " + error.message);
@@ -60,38 +47,6 @@ const Login = () => {
 
   const signUp = () => {
     (navigation as any).navigate("SignUp");
-  };
-
-  useEffect(() => {
-    const checkStoredCredentials = async () => {
-      try {
-        const storedEmail = await AsyncStorage.getItem("email");
-        const storedPassword = await AsyncStorage.getItem("password");
-        if (storedEmail && storedPassword) {
-          setEmail(storedEmail);
-          setPassword(storedPassword);
-          setRememberMe(true);
-        }
-      } catch (error: any) {
-        console.error(
-          "Error al recuperar las credenciales guardadas",
-          error.message
-        );
-      }
-    };
-
-    checkStoredCredentials();
-  }, []);
-
-  const toggleRememberMe = () => {
-    setRememberMe((prev) => !prev);
-  };
-
-  const onChange = (event: any, selectedDate: any) => {
-    const currentDate = selectedDate || new Date();
-    setShowPicker(Platform.OS === 'ios');
-    setSelectedDate(currentDate);
-    schedulePushNotification(currentDate);  // Programar la notificación
   };
 
   return (
@@ -118,15 +73,6 @@ const Login = () => {
           onChangeText={(text) => setPassword(text)}
         />
 
-        {/* Button to change "Remember Me" state 
-        <View style={styles.rememberMeContainer}>
-          <Button
-            title={rememberMe ? "Forget Me" : "Remember Me"}
-            onPress={toggleRememberMe}
-            color="#008080"
-          />
-        </View>
-*/}
         <View style={styles.buttonContainer}>
           <Button title="Sign In" onPress={signIn} color="#008080" />
         </View>
@@ -134,18 +80,6 @@ const Login = () => {
         <View style={styles.buttonContainer}>
           <Button title="Sign Up" onPress={signUp} color="#008080" />
         </View>
-
-        <View style={styles.buttonContainer}>
-          <Button title="Test notificación" onPress={() => setShowPicker(true)} color="#008080" />
-        </View>
-        {showPicker && (
-          <DateTimePicker
-            value={selectedDate}
-            mode="time"
-            display="default"
-            onChange={onChange}
-          />
-        )}
       </KeyboardAvoidingView>
     </View>
   );
@@ -183,9 +117,5 @@ const styles = StyleSheet.create({
     width: "100%",
     borderRadius: 10,
     overflow: "hidden",
-  },
-  rememberMeContainer: {
-    marginVertical: 10,
-    width: "100%",
   },
 });

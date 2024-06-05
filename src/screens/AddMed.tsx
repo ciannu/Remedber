@@ -17,6 +17,7 @@ import { addDoc, collection, Timestamp } from "firebase/firestore";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import { ColorLuminance } from "../utils/Color";
+import { schedulePushNotification } from "../utils/notifications";
 
 const AddMed = () => {
   const [medname, setMedname] = useState("");
@@ -107,17 +108,60 @@ const AddMed = () => {
         return;
       }
 
+      const strippedStartDate = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        startDate.getDate()
+      );
+
+      const strippedEndDate = new Date(
+        endDate.getFullYear(),
+        endDate.getMonth(),
+        endDate.getDate(),
+        23,
+        59,
+        59,
+        999
+      );
+
       await addDoc(collection(FIRESTORE_DB, "medicines"), {
-        userId: userId,
+        userId: userId, // Utiliza userId como profileId
         name: medname,
         type: medType,
         dose: meddose,
         amount: medamount,
-        start_date: Timestamp.fromDate(startDate),
-        end_date: Timestamp.fromDate(endDate),
+        start_date: Timestamp.fromDate(strippedStartDate),
+        end_date: Timestamp.fromDate(strippedEndDate),
         hour: selectedHour,
         days: days,
       });
+
+      for (const day in days) {
+        if (days[day]) {
+          let currentDate = new Date(strippedStartDate);
+          const end = new Date(strippedEndDate);
+          const hour = parseInt(selectedHour.split(":")[0], 10);
+          const minute = parseInt(selectedHour.split(":")[1], 10);
+
+          while (currentDate <= end) {
+            if (currentDate.getDay() === getDayIndex(day)) {
+              const notificationDate = new Date(
+                currentDate.getFullYear(),
+                currentDate.getMonth(),
+                currentDate.getDate(),
+                hour,
+                minute
+              );
+              await schedulePushNotification(
+                medname,
+                medType,
+                notificationDate
+              );
+            }
+            currentDate.setDate(currentDate.getDate() + 1);
+          }
+        }
+      }
 
       Alert.alert("Éxito", "Medicamento guardado correctamente", [
         {
@@ -130,6 +174,27 @@ const AddMed = () => {
     } catch (error) {
       console.error("error guardando el medicamento", error);
       Alert.alert("Error", "Hubo un problema guardando el medicamento");
+    }
+  };
+
+  const getDayIndex = (day: string): number => {
+    switch (day) {
+      case "lunes":
+        return 1;
+      case "martes":
+        return 2;
+      case "miercoles":
+        return 3;
+      case "jueves":
+        return 4;
+      case "viernes":
+        return 5;
+      case "sabado":
+        return 6;
+      case "domingo":
+        return 0;
+      default:
+        return -1;
     }
   };
 
@@ -234,7 +299,7 @@ const AddMed = () => {
           )}
         </View>
         <TouchableOpacity style={styles.saveButton} onPress={saveMedication}>
-          <Text style={styles.saveButtonText}>Guardar Medicamento</Text>
+          <Text style={styles.saveButtonText}>Guardar</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
