@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
+import React, { useEffect, useState, useRef } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, DrawerLayoutAndroid } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import CalendarComponent from "../components/CalendarComponent";
+import CalendarComponent from "../components/CalendarComponent"; // Importar el componente de calendario
 import { retrieveMedicationsForDay, deleteMedication } from "../utils/medications";
 import MedicationInfo from "../components/MedicationInfo";
+import { signOut } from "firebase/auth";
+import { FIREBASE_AUTH } from "../../FirebaseConfig";
 
 const Home = () => {
   const navigation = useNavigation();
@@ -11,6 +13,7 @@ const Home = () => {
   const [medications, setMedications] = useState<any[]>([]);
   const route = useRoute();
   const { profileName }: { profileName?: string } = route.params || {};
+  const drawerRef = useRef<DrawerLayoutAndroid>(null);
 
   useEffect(() => {
     const fetchMedications = async () => {
@@ -39,23 +42,81 @@ const Home = () => {
     }
   };
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tus Medicinas</Text>
-      <Text style={styles.subtitle}>Perfil: {profileName}</Text>
-      <View style={styles.calendarContainer}>
-        <CalendarComponent onDayPress={handleDayPress} selectedDate={selectedDay} />
-      </View>
-      <TouchableOpacity onPress={handleAddMedication} style={styles.button}>
-        <Image source={require("../../assets/add.png")} style={styles.image} />
-      </TouchableOpacity>
+  const openDrawer = () => {
+    drawerRef.current?.openDrawer();
+  };
 
-      {medications.length > 0 && (
-        <View style={styles.medicationInfoContainer}>
-          <MedicationInfo medications={medications} onDelete={handleDelete} />
-        </View>
-      )}
+  const closeDrawer = () => {
+    drawerRef.current?.closeDrawer();
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(FIREBASE_AUTH);
+      console.log("Sesión cerrada exitosamente");
+      closeDrawer();
+      (navigation as any).navigate("Login"); // Redirigir al usuario a la pantalla de inicio de sesión
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+    }
+  };
+
+  const confirmLogout = () => {
+    Alert.alert(
+      "Cerrar Sesión",
+      "¿Deseas cerrar la sesión actual?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        { text: "Aceptar", onPress: handleLogout }
+      ]
+    );
+  };
+
+  const handleShowHistory = () => {
+    (navigation as any).navigate("History", { profileName }); // Navegar a la pantalla History
+    closeDrawer();
+  };
+
+  const navigationView = () => (
+    <View style={[styles.container, styles.navigationContainer]}>
+      <TouchableOpacity style={styles.drawerOption} onPress={handleShowHistory}>
+        <Text style={styles.drawerText}>Mostrar Historial</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.logoutButton} onPress={confirmLogout}>
+        <Image source={require("../../assets/logout.png")} style={styles.logoutIcon} />
+      </TouchableOpacity>
     </View>
+  );
+
+  return (
+    <DrawerLayoutAndroid
+      ref={drawerRef}
+      drawerWidth={300}
+      drawerPosition="left"
+      renderNavigationView={navigationView}
+    >
+      <View style={styles.container}>
+        <Text style={styles.title}>Tus Medicinas</Text>
+        <Text style={styles.subtitle}>Perfil: {profileName}</Text>
+        <TouchableOpacity onPress={handleAddMedication} style={styles.button}>
+          <Image source={require("../../assets/add.png")} style={styles.image} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={openDrawer} style={styles.menuButton}>
+          <Image source={require("../../assets/menu.png")} style={styles.menu} />
+        </TouchableOpacity>
+
+        {/* Agregar el componente de calendario */}
+        <View style={styles.calendarContainer}>
+          <CalendarComponent onDayPress={handleDayPress} selectedDate={selectedDay} />
+        </View>
+
+        {medications.length > 0 && (
+          <View style={styles.medicationInfoContainer}>
+            <MedicationInfo medications={medications} onDelete={handleDelete} />
+          </View>
+        )}
+      </View>
+    </DrawerLayoutAndroid>
   );
 };
 
@@ -76,24 +137,58 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 10,
   },
-  calendarContainer: {
-    paddingHorizontal: 10,
-    height: 250,
-  },
   button: {
     position: "absolute",
     bottom: 20,
     right: 20,
   },
+  menuButton: {
+    position: "absolute",
+    top: 20,
+    left: 20,
+  },
   image: {
     width: 50,
     height: 50,
+  },
+  menu: { // Estilo para un icono de menú más pequeño
+    width: 32,
+    height: 32,
+    marginTop: 16,
+  },
+  calendarContainer: {
+    paddingHorizontal: 10,
+    height: 250,
   },
   medicationInfoContainer: {
     marginTop: 20,
     paddingHorizontal: 10,
     alignItems: "center",
   },
+  navigationContainer: {
+    flex: 1,
+    backgroundColor: "rgba(170, 255, 255, 0.8)", // Fondo del drawer más oscuro
+    paddingTop: 50,
+    paddingLeft: 20,
+  },
+  drawerOption: {
+    marginBottom: 20,
+  },
+  drawerText: {
+    fontSize: 24, // Tamaño más grande
+    fontWeight: "bold", // Letras más gruesas
+    color: "#333", // Color de las letras
+  },
+  logoutButton: {
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+  },
+  logoutIcon: {
+    width: 32,
+    height: 32,
+  },
 });
 
 export default Home;
+

@@ -24,10 +24,22 @@
       },
       "notification": {
         "icon": "./assets/notification-icon.png"
-      }
+      },
+      "package": "com.ciann.Remedber"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "dfa27e18-79d3-4b0a-a89e-4c88af3eaf59"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/dfa27e18-79d3-4b0a-a89e-4c88af3eaf59"
     }
   }
 }

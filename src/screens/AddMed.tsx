@@ -131,7 +131,7 @@ const AddMed = () => {
         name: medname,
         type: medType,
         dose: meddose,
-        amount: medamount,
+        amount: parseInt(medamount),
         start_date: Timestamp.fromDate(strippedStartDate),
         end_date: Timestamp.fromDate(strippedEndDate),
         hour: selectedHour,

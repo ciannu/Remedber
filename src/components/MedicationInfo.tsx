@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  Alert,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
 
 interface Medication {
   id: string;
@@ -22,7 +15,6 @@ interface Props {
 }
 
 const MedicationInfo: React.FC<Props> = ({ medications, onDelete }) => {
-
   const handleDelete = (medicationId: string) => {
     Alert.alert(
       "Confirmar eliminación",

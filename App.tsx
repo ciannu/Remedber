@@ -77,6 +77,7 @@ export default function App() {
           <Stack.Screen name="Profiles" component={Profiles} />
           <Stack.Screen name="AddMed" component={AddMed} />
           <Stack.Screen name="History" component={History} />
+
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
