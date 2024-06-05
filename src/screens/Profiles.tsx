@@ -38,6 +38,7 @@ const Profiles = () => {
     const auth = getAuth(FIREBASE_APP);
     const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
       if (user) {
+        console.log("Usuario autenticado:", user);
         setUserId(user.uid); //guardar id del usuario
       }
     });

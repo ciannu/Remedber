@@ -9,6 +9,7 @@ import * as SplashScreen from "expo-splash-screen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
+
 import {
   registerForPushNotificationsAsync,
   schedulePushNotification,
@@ -51,7 +52,8 @@ export default function App() {
       if (user) {
         setUser(user);
         try {
-          await AsyncStorage.setItem("accessToken", "token_value_here"); // Almacena el token de acceso en AsyncStorage
+          const accessToken = await user.getIdToken(); // Obtiene el token de acceso del usuario autenticado
+          await AsyncStorage.setItem("accessToken", accessToken); // Almacena el token de acceso en AsyncStorage
         } catch (error) {
           console.error("Error al almacenar el token de acceso:", error);
         }

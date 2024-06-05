@@ -33,6 +33,9 @@ const Login = () => {
         return;
       }
       console.log("USER ID: ", userId);
+    
+      await AsyncStorage.setItem("accessToken", await response.user.getIdToken()); 
+  
       Alert.alert("Éxito", "Sesión iniciada correctamente", [
         {
           text: "OK",
@@ -41,8 +44,6 @@ const Login = () => {
           },
         },
       ]);
-  
-      await AsyncStorage.setItem("accessToken", "token_value_here"); // Guarda el token de acceso en AsyncStorage al iniciar sesión
     } catch (error: any) {
       console.error(error);
       alert("Login fallido: " + error.message);
