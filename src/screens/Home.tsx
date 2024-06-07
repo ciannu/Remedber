@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, DrawerLayoutAndroid } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import CalendarComponent from "../components/CalendarComponent"; // Importar el componente de calendario
+import CalendarComponent from "../components/CalendarComponent";
 import { retrieveMedicationsForDay, deleteMedication } from "../utils/medications";
 import MedicationInfo from "../components/MedicationInfo";
 import { signOut } from "firebase/auth";
@@ -55,7 +55,7 @@ const Home = () => {
       await signOut(FIREBASE_AUTH);
       console.log("Sesión cerrada exitosamente");
       closeDrawer();
-      (navigation as any).navigate("Login"); // Redirigir al usuario a la pantalla de inicio de sesión
+      (navigation as any).navigate("Login");
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
     }
@@ -73,7 +73,7 @@ const Home = () => {
   };
 
   const handleShowHistory = () => {
-    (navigation as any).navigate("History", { profileName }); // Navegar a la pantalla History
+    (navigation as any).navigate("History", { profileName });
     closeDrawer();
   };
 
@@ -105,7 +105,6 @@ const Home = () => {
           <Image source={require("../../assets/menu.png")} style={styles.menu} />
         </TouchableOpacity>
 
-        {/* Agregar el componente de calendario */}
         <View style={styles.calendarContainer}>
           <CalendarComponent onDayPress={handleDayPress} selectedDate={selectedDay} />
         </View>
@@ -151,7 +150,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
   },
-  menu: { // Estilo para un icono de menú más pequeño
+  menu: {
     width: 32,
     height: 32,
     marginTop: 16,
@@ -167,7 +166,7 @@ const styles = StyleSheet.create({
   },
   navigationContainer: {
     flex: 1,
-    backgroundColor: "rgba(170, 255, 255, 0.8)", // Fondo del drawer más oscuro
+    backgroundColor: "rgba(170, 255, 255, 0.8)",
     paddingTop: 50,
     paddingLeft: 20,
   },
@@ -175,9 +174,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   drawerText: {
-    fontSize: 24, // Tamaño más grande
-    fontWeight: "bold", // Letras más gruesas
-    color: "#333", // Color de las letras
+    fontSize: 24, 
+    fontWeight: "bold", 
+    color: "#333", 
   },
   logoutButton: {
     position: "absolute",

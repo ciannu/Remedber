@@ -31,7 +31,7 @@ const History = () => {
         onDayPress={handleDayPress}
         markedDates={{ [selectedDate]: { selected: true } }}
         theme={{ 
-          calendarBackground: "#c0d9d9", // Ajusta este color de fondo a tu preferencia
+          calendarBackground: "#c0d9d9",
         }}
         style={styles.calendar}
       />

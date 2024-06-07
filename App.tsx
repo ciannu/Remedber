@@ -36,9 +36,9 @@ export default function App() {
   useEffect(() => {
     const checkAuthState = async () => {
       try {
-        const token = await AsyncStorage.getItem("accessToken"); // Verifica el token de acceso en AsyncStorage
+        const token = await AsyncStorage.getItem("accessToken");
         if (token) {
-          setUser({} as User); // Si hay un token, establece el estado del usuario como autenticado
+          setUser({} as User);
         }
       } catch (error) {
         console.error("Error al verificar el estado de autenticación:", error);
@@ -52,15 +52,15 @@ export default function App() {
       if (user) {
         setUser(user);
         try {
-          const accessToken = await user.getIdToken(); // Obtiene el token de acceso del usuario autenticado
-          await AsyncStorage.setItem("accessToken", accessToken); // Almacena el token de acceso en AsyncStorage
+          const accessToken = await user.getIdToken();
+          await AsyncStorage.setItem("accessToken", accessToken);
         } catch (error) {
           console.error("Error al almacenar el token de acceso:", error);
         }
       } else {
         setUser(null);
         try {
-          await AsyncStorage.removeItem("accessToken"); // Elimina el token de acceso al cerrar sesión
+          await AsyncStorage.removeItem("accessToken");
         } catch (error) {
           console.error("Error al eliminar el token de acceso:", error);
         }
